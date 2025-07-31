@@ -1,0 +1,65 @@
+:root {
+    --primary-color: #3369F3;
+    --secondary-color: #2c3e50;
+    --background-color: #FFFFFF;
+    --text-color: #1E1E1E;
+    --error-color: #FF2F2F;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-page {
+    width: 340px;
+    margin: 0 auto;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-50%);
+}
+
+.login-page__title {
+    font-size: 20px;
+    text-align: center;
+}
+
+.input, .select, .button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid var(--primary-color);
+
+    &:focus-visible {
+        outline: none;
+    }
+}
+
+.button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--primary-color) 80%, black);
+    }
+
+    &:disabled {
+        background-color: #bdc3c7;
+        cursor: not-allowed;
+    }
+}
