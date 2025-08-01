@@ -10,22 +10,24 @@ body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .app {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    //display: flex;
+    //justify-content: center;
+    //align-items: center;
+    //min-height: 100vh;
 }
 
 .login-page {
     width: 340px;
-    margin: 0 auto;
+    margin: 10vh auto;
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-50%);
 }
 
 .login-page__title {
@@ -49,6 +51,7 @@ body {
 
 .button {
     background-color: var(--primary-color);
+    border-radius: 8px;
     color: white;
     border: none;
     cursor: pointer;
@@ -61,5 +64,10 @@ body {
     &:disabled {
         background-color: #bdc3c7;
         cursor: not-allowed;
+    }
+
+    &.secondary {
+        color: var(--primary-color);
+        background-color: transparent;
     }
 }

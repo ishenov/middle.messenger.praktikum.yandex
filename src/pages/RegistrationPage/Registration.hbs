@@ -1,11 +1,15 @@
-<div class="app">
-    <div class="login-page">
-        <h1 class="login-page__title">Войти</h1>
-        <form>
-            {{> Input id="question-input" type="text" placeholder="Логин"}}
-            {{> Input id="question-input" type="text" placeholder="Пароль"}}
-            {{> Button id="add-question" text="Авторизоваться"}}
-            {{> Button id="add-question" text="Зарегистрироваться"}}
-        </form>
-    </div>
+<div class="login-page">
+    <h1 class="login-page__title">Зарегистрироваться</h1>
+    <form>
+        {{> Input id="question-input" type="email" placeholder="Почта"}}
+        {{> Input id="question-input" type="text" placeholder="Логин"}}
+        {{> Input id="question-input" type="text" placeholder="Логин"}}
+        {{> Input id="question-input" type="text" placeholder="Имя"}}
+        {{> Input id="question-input" type="text" placeholder="Фамилия"}}
+        {{> Input id="question-input" type="tel" placeholder="Телефон"}}
+        {{> Input id="question-input" type="password" placeholder="Пароль"}}
+        {{> Input id="question-input" type="password" placeholder="Повторите пароль"}}
+        {{> Button id="add-question" text="Зарегистрироваться"}}
+        {{> Button id="add-question" text="Войти" class="secondary"}}
+    </form>
 </div>

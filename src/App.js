@@ -21,7 +21,7 @@ export default class App {
     render() {
         let template;
         if (this.state.currentPage === 'login') {
-            template = Handlebars.compile(Pages.LoginPage);
+            template = Handlebars.compile(Pages.ChatPage);
             this.appElement.innerHTML = template({
                 questions: this.state.questions,
                 createButtonEnabled: this.state.questions.length === 0
