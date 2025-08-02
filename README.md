@@ -7,3 +7,4 @@
 - 1. `npm install`,
 - 2. `npm run start` — запуск
 
+https://deploy-preview-3--zesty-gingersnap-48a888.netlify.app/
