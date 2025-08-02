@@ -15,7 +15,6 @@ Handlebars.registerPartial('Footer', Footer);
 export default class App {
     constructor() {
         const currentPage = window.location.pathname.split('/').pop();
-        console.log(currentPage )
         this.state = {
             currentPage: currentPage,
             isEdit: true,
@@ -39,21 +38,15 @@ export default class App {
         switch (this.state.currentPage) {
             case 'login':
                 template = Handlebars.compile(Pages.LoginPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                this.appElement.innerHTML = template();
                 break;
             case 'registration':
                 template = Handlebars.compile(Pages.RegistrationPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                this.appElement.innerHTML = template();
                 break;
             case 'profile':
                 template = Handlebars.compile(Pages.ProfilePage);
-                this.appElement.innerHTML = template({
-                    isEdit: true,
-                });
+                this.appElement.innerHTML = template();
                 break;
             case 'chat':
                 template = Handlebars.compile(Pages.ChatPage);
@@ -64,26 +57,20 @@ export default class App {
             case 'change-password':
                 template = Handlebars.compile(Pages.ChangePasswordPage);
                 this.appElement.innerHTML = template({
-                    chats: this.state.chats,
+                    isEdit: true,
                 });
                 break;
             case '404':
                 template = Handlebars.compile(Pages.NotFoundPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                this.appElement.innerHTML = template();
                 break;
             case '500':
                 template = Handlebars.compile(Pages.ServerErrorPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                this.appElement.innerHTML = template();
                 break;
             default:
                 template = Handlebars.compile(Pages.LoginPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                this.appElement.innerHTML = template();
                 break;
         }
         this.attachEventListeners();
