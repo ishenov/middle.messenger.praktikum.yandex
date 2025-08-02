@@ -1,1 +1,1 @@
-export { default as LoginPage } from './Login.hbs?raw'
+export { default as LoginPage } from './Login.hbs?raw';
