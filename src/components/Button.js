@@ -1,4 +1,4 @@
-export default `<button id="{{id}}" class="button {{#if class}}{{class}}{{/if}}" 
+export default `<button id="{{id}}" class="button {{class}}" 
 {{#if disabled}}
   disabled
 {{/if}}>{{text}}</button>`;

@@ -1,15 +1,15 @@
 <div class="login-page">
     <h1 class="login-page__title">Зарегистрироваться</h1>
     <form>
-        {{> Input id="question-input" type="email" placeholder="Почта"}}
-        {{> Input id="question-input" type="text" placeholder="Логин"}}
-        {{> Input id="question-input" type="text" placeholder="Логин"}}
-        {{> Input id="question-input" type="text" placeholder="Имя"}}
-        {{> Input id="question-input" type="text" placeholder="Фамилия"}}
-        {{> Input id="question-input" type="tel" placeholder="Телефон"}}
-        {{> Input id="question-input" type="password" placeholder="Пароль"}}
-        {{> Input id="question-input" type="password" placeholder="Повторите пароль"}}
-        {{> Button id="add-question" text="Зарегистрироваться"}}
-        {{> Button id="add-question" text="Войти" class="secondary"}}
+        {{> Input id="email" type="email" placeholder="Почта"}}
+        {{> Input id="login" type="text" placeholder="Логин"}}
+        {{> Input id="first_name" type="text" placeholder="Имя"}}
+        {{> Input id="second_name" type="text" placeholder="Фамилия"}}
+        {{> Input id="phone" type="tel" placeholder="Телефон"}}
+        {{> Input id="password" type="password" placeholder="Пароль"}}
+        {{> Input id="password2" type="password" placeholder="Повторите пароль"}}
+        {{> Button id="registration" text="Зарегистрироваться"}}
+        {{> Button id="signin" text="Войти" class="secondary"}}
     </form>
 </div>
+{{> Footer}}
