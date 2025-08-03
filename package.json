@@ -7,7 +7,7 @@
     "node": ">=16"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "start": "vite build && node server.cjs",
     "preview": "vite preview"
