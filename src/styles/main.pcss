@@ -1,0 +1,74 @@
+:root {
+    --primary-color: #3369F3;
+    --secondary-color: #2c3e50;
+    --background-color: #FFFFFF;
+    --text-color: #1E1E1E;
+    --error-color: #FF2F2F;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.login-page {
+    width: 340px;
+    margin: 10vh auto;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    & input, & button {
+        width: 100%;
+    }
+}
+
+.login-page__title {
+    font-size: 20px;
+    text-align: center;
+}
+
+.input, .select, .button {
+    margin: 0 0 10px 0;
+    padding: 10px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid var(--primary-color);
+
+    &:focus-visible {
+        outline: none;
+    }
+}
+
+.button {
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--primary-color) 80%, black);
+    }
+
+    &:disabled {
+        background-color: #bdc3c7;
+        cursor: not-allowed;
+    }
+
+    &.secondary {
+        color: var(--primary-color);
+        background-color: transparent;
+    }
+}
+
+.not-found-page, .server-error-page {
+    text-align: center;
+    margin-top: 20%;
+}

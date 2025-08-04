@@ -1,0 +1,59 @@
+<div class="messenger">
+    <aside class="sidebar">
+        <div class="header">
+            <div class="profile-link footer-link" data-page="profile">Профиль &gt;</div>
+        </div>
+        <div>
+            {{> Input id="search" type="text" placeholder="Поиск" class="search"}}
+        </div>
+
+        <ul class="chat-list">
+            {{#each chats}}
+                <li class="chat-item {{#if selected}}selected{{/if}}">
+                    <div class="avatar"></div>
+                    <div class="chat-info">
+                        <div class="chat-title">{{name}}</div>
+                        <div class="chat-preview">{{preview}}</div>
+                    </div>
+                    {{#if unread}}
+                        <div class="unread-count">{{unread}}</div>
+                    {{/if}}
+                    <div class="chat-time">{{time}}</div>
+                </li>
+            {{/each}}
+        </ul>
+    </aside>
+
+    <main class="chat-window">
+        <div class="chat-header">
+            <div class="chat-user">
+                <div class="avatar small"></div>
+                <div class="username">{{selectedChat.name}}</div>
+            </div>
+            <div class="chat-menu">⋮</div>
+        </div>
+
+        <div class="chat-body">
+            <div class="chat-date">19 июня</div>
+
+            <div class="message incoming">
+                <div class="bubble">
+                    Привет! Смотри, тут всплыл интересный кусок лунной космической истории...
+                </div>
+                <div class="meta">11:56</div>
+            </div>
+
+            <div class="message outgoing">
+                <div class="bubble">Круто!</div>
+                <div class="meta">✔✔ 12:00</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            {{> Button id="file-button" text="📎" class="file-button"}}
+            {{> Input id="message" type="text" placeholder="Сообщение"}}
+            {{> Button id="send-button" text="➤" class="send-button"}}
+        </div>
+    </main>
+</div>
+{{> Footer}}

@@ -1,0 +1,92 @@
+<div class="profile-page">
+    <div class="sidebar">
+        <button id="back-button" class="back-button">&#8592;</button>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-avatar">
+            <div class="avatar large"></div>
+        </div>
+        <div class="profile-name">{{firstName}}</div>
+
+        <div class="profile-info">
+            <div class="row">
+                <div class="label">Почта</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="email" class="profile-input" type="email" value="{{email}}"}}
+                    {{else}}
+                        {{email}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Логин</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="login" class="profile-input" type="text" value="{{login}}"}}
+                    {{else}}
+                        {{login}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Имя</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="first_name" class="profile-input" type="text" value="{{firstName}}"}}
+                    {{else}}
+                        {{firstName}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Фамилия</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="second_name" class="profile-input" type="text" value="{{secondName}}"}}
+                    {{else}}
+                        {{secondName}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Имя в чате</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="display_name" class="profile-input" type="text" value="{{displayName}}"}}
+                    {{else}}
+                        {{displayName}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">Телефон</div>
+                <div class="value">
+                    {{#if isEdit}}
+                        {{> Input id="phone" class="profile-input" type="tel" value="{{phone}}"}}
+                    {{else}}
+                        {{phone}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            {{#if isEdit}}
+                {{> Button text="Сохранить" class="edit-link secondary"}}
+            {{else}}
+                {{> Button text="Изменить данные" class="edit-link secondary"}}
+            {{/if}}
+
+            {{> Button text="Изменить пароль" class="edit-link secondary"}}
+            {{> Button  text="Выйти" class="logout-link secondary"}}
+        </div>
+    </div>
+</div>
+{{> Footer}}
