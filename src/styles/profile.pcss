@@ -4,49 +4,49 @@
     background-color: #f1f1f1;
 
     .sidebar {
+        display: flex;
         width: 60px;
         background-color: transparent;
-        display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .back-button {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
         background: #2f64ff;
         color: white;
         font-size: 24px;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
         cursor: pointer;
     }
 
     .profile-container {
-        flex-grow: 1;
-        background: white;
-        padding: 40px;
         display: flex;
+        padding: 40px;
+        background: white;
+        flex-grow: 1;
         flex-direction: column;
         align-items: center;
     }
 
     .profile-input {
-        margin: 0;
         padding: 6px 10px;
+        margin: 0;
     }
 
     .avatar.large {
         width: 120px;
         height: 120px;
-        border-radius: 50%;
         margin-bottom: 12px;
+        border-radius: 50%;
     }
 
     .profile-name {
-        font-weight: 600;
-        font-size: 18px;
         margin-bottom: 32px;
+        font-size: 18px;
+        font-weight: 600;
     }
 
     .profile-info {
@@ -72,21 +72,21 @@
     }
 
     .profile-actions {
-        margin-top: 32px;
         display: flex;
+        margin-top: 32px;
         flex-direction: column;
         gap: 12px;
     }
 
     .edit-link {
+        margin: 0;
         color: #2f64ff;
         text-decoration: none;
-        margin: 0;
     }
 
     .logout-link {
+        margin: 0;
         color: red;
         text-decoration: none;
-        margin: 0;
     }
 }

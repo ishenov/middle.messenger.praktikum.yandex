@@ -1,9 +1,9 @@
 import './styles/main.pcss';
 import './styles/chat.pcss';
 import './styles/profile.pcss';
-import App from './App.js';
+import App from './App';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', (): void => {
     const app = new App();
     app.render();
 });

@@ -10,16 +10,36 @@
     "dev": "vite --open",
     "build": "vite build",
     "start": "vite build && node server.cjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "lint:check": "eslint src --ext .ts,.tsx",
+    "stylelint": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts --fix",
+    "stylelint:check": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts",
+    "lint:all": "npm run lint:check && npm run stylelint:check && npm run type-check"
   },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "autoprefixer": "^10.4.19",
+    "eslint": "^9.33.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "postcss": "^8.4.40",
     "postcss-preset-env": "^9.6.0",
+    "stylelint": "^16.23.1",
+    "stylelint-config-standard": "^39.0.0",
+    "stylelint-order": "^7.0.0",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2",
     "vite": "^7.0.6"
   },
   "dependencies": {
-    "handlebars": "^4.7.7",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "handlebars": "^4.7.7"
   }
 }

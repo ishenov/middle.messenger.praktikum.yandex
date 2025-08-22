@@ -49,11 +49,11 @@
             </div>
         </div>
 
-        <div class="chat-input">
-            {{> Button id="file-button" text="📎" class="file-button"}}
-            {{> Input id="message" type="text" placeholder="Сообщение"}}
-            {{> Button id="send-button" text="➤" class="send-button"}}
-        </div>
+        <form id="message-form" class="chat-input">
+            {{> Button id="file-button" text="📎" class="file-button" type="button"}}
+            {{> ValidatedInput id="message" type="text" placeholder="Сообщение" fieldName="message"}}
+            {{> Button id="send-button" text="➤" class="send-button" type="submit"}}
+        </form>
     </main>
 </div>
 {{> Footer}}
