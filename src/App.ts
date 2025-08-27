@@ -150,12 +150,6 @@ export default class App {
         if (messageForm) {
             new FormValidator(messageForm, this.handleMessageSubmit.bind(this));
         }
-
-        // Тестовая форма
-        const testForm = document.querySelector('#test-form') as HTMLFormElement;
-        if (testForm) {
-            new FormValidator(testForm, this.handleTestSubmit.bind(this));
-        }
     }
 
     private handleLoginSubmit(formData: Record<string, string>): void {
@@ -181,10 +175,6 @@ export default class App {
     }
 
     private handleMessageSubmit(formData: Record<string, string>): void {
-        console.log('Данные формы:', formData);
-    }
-
-    private handleTestSubmit(formData: Record<string, string>): void {
         console.log('Данные формы:', formData);
     }
 
