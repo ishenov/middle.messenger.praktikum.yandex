@@ -16,9 +16,6 @@ export default `<footer class="footer">
             <li>
                 {{> Link href="#" class="footer-link" data-page="change-password" text="Change Password"}}
             </li>
-            <li>
-                {{> Link href="#" class="footer-link" data-page="test" text="Test Validation"}}
-            </li>
         </ul>
     </nav>
 </footer>`;

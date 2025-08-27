@@ -5,4 +5,3 @@ export { ProfilePage } from './ProfilePage/index.js';
 export { ChangePasswordPage } from './ChangePasswordPage/index.js';
 export { ServerErrorPage } from './ServerErrorPage/index.js';
 export { NotFoundPage } from './NotFoundPage/index.js';
-export { TestPage } from './TestPage/index.js';
