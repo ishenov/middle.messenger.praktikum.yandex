@@ -33,7 +33,7 @@ export default class App {
     private appElement: HTMLElement | null;
 
     constructor() {
-        const currentPage = window.location.pathname.split('/').pop() || '';
+        const currentPage = window.location.pathname.split('/').pop() ?? '';
         this.state = {
             currentPage,
             isEdit: true,
@@ -89,10 +89,6 @@ export default class App {
                 template = Handlebars.compile(Pages.ServerErrorPage);
                 this.appElement.innerHTML = template({});
                 break;
-            case 'test':
-                template = Handlebars.compile(Pages.TestPage);
-                this.appElement.innerHTML = template({});
-                break;
             default:
                 template = Handlebars.compile(Pages.LoginPage);
                 this.appElement.innerHTML = template({});
@@ -109,7 +105,7 @@ export default class App {
             link.addEventListener('click', (e: Event) => {
                 e.preventDefault();
                 const target = e.target as HTMLElement;
-                this.changePage(target.dataset.page || '');
+                this.changePage(target.dataset.page ?? '');
             });
         });
         
