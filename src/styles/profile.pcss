@@ -1,66 +1,66 @@
 .profile-page {
+    background-color: #f1f1f1;
     display: flex;
     height: 100vh;
-    background-color: #f1f1f1;
 
     .sidebar {
-        display: flex;
-        width: 60px;
-        background-color: transparent;
         align-items: center;
+        background-color: transparent;
+        display: flex;
         justify-content: center;
+        width: 60px;
     }
 
     .back-button {
-        width: 40px;
-        height: 40px;
+        background: #2f64ff;
         border: none;
         border-radius: 50%;
-        background: #2f64ff;
         color: white;
-        font-size: 24px;
         cursor: pointer;
+        font-size: 24px;
+        height: 40px;
+        width: 40px;
     }
 
     .profile-container {
-        display: flex;
-        padding: 40px;
-        background: white;
-        flex-grow: 1;
-        flex-direction: column;
         align-items: center;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 40px;
     }
 
     .profile-input {
-        padding: 6px 10px;
         margin: 0;
+        padding: 6px 10px;
     }
 
     .avatar.large {
-        width: 120px;
+        border-radius: 50%;
         height: 120px;
         margin-bottom: 12px;
-        border-radius: 50%;
+        width: 120px;
     }
 
     .profile-name {
-        margin-bottom: 32px;
         font-size: 18px;
         font-weight: 600;
+        margin-bottom: 32px;
     }
 
     .profile-info {
-        width: 100%;
-        max-width: 600px;
         font-size: 14px;
+        max-width: 600px;
+        width: 100%;
     }
 
     .row {
+        align-items: center;
+        border-bottom: 1px solid #eee;
         display: flex;
         justify-content: space-between;
         padding: 10px 0;
-        align-items: center;
-        border-bottom: 1px solid #eee;
     }
 
     .label {
@@ -73,20 +73,20 @@
 
     .profile-actions {
         display: flex;
-        margin-top: 32px;
         flex-direction: column;
         gap: 12px;
+        margin-top: 32px;
     }
 
     .edit-link {
-        margin: 0;
         color: #2f64ff;
+        margin: 0;
         text-decoration: none;
     }
 
     .logout-link {
-        margin: 0;
         color: red;
+        margin: 0;
         text-decoration: none;
     }
 }
