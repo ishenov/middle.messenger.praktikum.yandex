@@ -13,7 +13,7 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: 2020,
     sourceType: 'module',
     project: './tsconfig.json',
   },
@@ -52,7 +52,7 @@ module.exports = {
     'import/no-unresolved': 'off', // TypeScript handles this
     
     // General rules
-    'no-console': 'warn',
+    'no-console': 'off',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
@@ -67,10 +67,12 @@ module.exports = {
       },
     },
   },
+  // Игнорируем определенные файлы
   ignorePatterns: [
+    '*.config.ts',
+    '*.config.js',
     'dist/',
-    'node_modules/',
-    '*.js',
-    '*.cjs',
+    'build/',
+    'node_modules/'
   ],
 };

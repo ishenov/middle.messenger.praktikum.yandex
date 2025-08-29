@@ -12,10 +12,11 @@
     "start": "vite build && node server.cjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "lint:style": "stylelint \"**/*.pcss\"",
-    "lint:style:fix": "stylelint \"**/*.pcss\" --fix"
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "lint:check": "eslint src --ext .ts,.tsx",
+    "stylelint": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts --fix",
+    "stylelint:check": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts",
+    "lint:all": "npm run lint:check && npm run stylelint:check && npm run type-check"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

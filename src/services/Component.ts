@@ -70,7 +70,7 @@ export default class Block {
   }
 
    
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   componentDidUpdate(_oldProps: Record<string, any>, _newProps: Record<string, any>): boolean {
     return true;
   }

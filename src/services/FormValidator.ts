@@ -11,7 +11,7 @@ export class FormValidator {
   private validationResults: Record<string, ValidationResult> = {};
   private onSubmitCallback?: (formData: Record<string, string>) => void;
 
-  constructor(formElement: HTMLFormElement, onSubmitCallback?: (formData: Record<string, string>) => void) {
+  constructor(formElement: HTMLFormElement, onSubmitCallback?: () => void) {
     this.formElement = formElement;
     this.onSubmitCallback = onSubmitCallback;
     this.initializeValidation();
@@ -58,10 +58,7 @@ export class FormValidator {
     
     // Логируем только если форма валидна
     if (ValidationService.isFormValid(validationResults)) {
-      console.log('=== ОТПРАВКА ФОРМЫ ===');
-      console.log('ID формы:', this.formElement.id);
       console.log('Данные формы:', formData);
-      console.log('=====================');
     }
     
     // Обновляем все поля
