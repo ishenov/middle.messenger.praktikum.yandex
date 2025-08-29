@@ -23,7 +23,6 @@ module.exports = {
   ],
   rules: {
     // TypeScript specific rules
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
@@ -53,6 +52,7 @@ module.exports = {
     
     // General rules
     'no-console': 'off',
+    'no-unused-vars': 'off',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',

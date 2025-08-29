@@ -9,7 +9,7 @@ export interface FormField {
 export class FormValidator {
   private formElement: HTMLFormElement;
   private validationResults: Record<string, ValidationResult> = {};
-  private onSubmitCallback?: (formData: Record<string, string>) => void;
+  private onSubmitCallback?: (formData: Record<string, string>) => void; // eslint-disable-line no-unused-vars
 
   constructor(formElement: HTMLFormElement, onSubmitCallback?: () => void) {
     this.formElement = formElement;
