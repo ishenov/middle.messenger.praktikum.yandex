@@ -93,13 +93,13 @@ export class FormValidator {
     const errorElement = wrapper?.querySelector('.input-error') as HTMLElement;
 
     if (result && !result.isValid) {
-      input.classList.add('input--error');
+      input.classList.add('input-error-text');
       if (errorElement) {
         errorElement.textContent = result.message;
         errorElement.style.display = 'block';
       }
     } else {
-      input.classList.remove('input--error');
+      input.classList.remove('input-error-text');
       if (errorElement) {
         errorElement.style.display = 'none';
       }
@@ -134,7 +134,7 @@ export class FormValidator {
       inputs.forEach(input => {
         input.value = '';
         // Убираем класс ошибки
-        input.classList.remove('input--error');
+        input.classList.remove('input-error-text');
         // Скрываем сообщение об ошибке
         const wrapper = input.closest('.input-wrapper');
         const errorElement = wrapper?.querySelector('.input-error') as HTMLElement;
