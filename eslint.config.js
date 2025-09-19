@@ -45,30 +45,11 @@ export default [
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
-      
-      // Import rules
-      'import/order': [
-        'error',
-        {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
-          ],
-          'newlines-between': 'always',
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true,
-          },
-        },
-      ],
+
       'import/no-unresolved': 'off', // TypeScript handles this
       'import/no-duplicates': 'error',
       'import/no-unused-modules': 'warn',
-      
+
       // General rules
       'no-console': 'warn',
       'no-debugger': 'error',

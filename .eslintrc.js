@@ -28,28 +28,9 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/prefer-const': 'error',
     '@typescript-eslint/no-var-requires': 'error',
-    
-    // Import rules
-    'import/order': [
-      'error',
-      {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index',
-        ],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-      },
-    ],
+
     'import/no-unresolved': 'off', // TypeScript handles this
-    
+
     // General rules
     'no-console': 'off',
     'no-unused-vars': 'off',
