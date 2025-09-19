@@ -5,5 +5,14 @@ import App from './App';
 
 document.addEventListener('DOMContentLoaded', (): void => {
     const app = new App();
-    app.render();
+    const appElement = document.getElementById('app');
+    if (appElement && app.element) {
+        appElement.appendChild(app.element);
+        app.dispatchComponentDidMount();
+    }
+
+    // Очистка при выгрузке страницы
+    window.addEventListener('beforeunload', () => {
+        app.destroy();
+    });
 });

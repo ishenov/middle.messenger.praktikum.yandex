@@ -1,4 +1,5 @@
 import { ValidationService, ValidationResult } from './Validation.js';
+import Component from './Component.js';
 
 export interface FormField {
   name: string;
@@ -6,22 +7,23 @@ export interface FormField {
   error: string;
 }
 
-export class FormValidator {
+export class FormValidator extends Component {
   private formElement: HTMLFormElement;
   private validationResults: Record<string, ValidationResult> = {};
   private onSubmitCallback?: (formData: Record<string, string>) => void; // eslint-disable-line no-unused-vars
 
   constructor(formElement: HTMLFormElement, onSubmitCallback?: () => void) {
+    super('div', {});
     this.formElement = formElement;
     this.onSubmitCallback = onSubmitCallback;
     this.initializeValidation();
   }
 
   private initializeValidation(): void {
-    // Добавляем обработчики событий
-    this.formElement.addEventListener('blur', this.handleBlur.bind(this), true);
-    this.formElement.addEventListener('input', this.handleInput.bind(this), true);
-    this.formElement.addEventListener('submit', this.handleSubmit.bind(this));
+    // Используем механизм событий из Component
+    this.addEventListener(this.formElement, 'blur', this.handleBlur.bind(this));
+    this.addEventListener(this.formElement, 'input', this.handleInput.bind(this));
+    this.addEventListener(this.formElement, 'submit', this.handleSubmit.bind(this));
   }
 
   private handleBlur(event: Event): void {
@@ -148,8 +150,7 @@ export class FormValidator {
   }
 
   public destroy(): void {
-    this.formElement.removeEventListener('blur', this.handleBlur.bind(this), true);
-    this.formElement.removeEventListener('input', this.handleInput.bind(this), true);
-    this.formElement.removeEventListener('submit', this.handleSubmit.bind(this));
+    // Используем метод из Component для очистки всех событий
+    super.destroy();
   }
 }

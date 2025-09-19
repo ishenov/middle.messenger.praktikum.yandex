@@ -1,12 +1,13 @@
-import Handlebars, { HandlebarsTemplateDelegate } from 'handlebars';
+import Handlebars from 'handlebars';
 
-import Button from "./components/button/Button";
+import Button from "./components/button/template";
 import Footer from "./components/Footer.js";
 import Input from "./components/Input.js";
 import Link from "./components/Link.js";
 import ValidatedInput from "./components/ValidatedInput.js";
-import * as Pages from './pages/index.js';
+import { LoginPage, RegistrationPage, ChatPage, ProfilePage, ChangePasswordPage, NotFoundPage, ServerErrorPage } from './pages/index.js';
 import { FormValidator } from './services/FormValidator.js';
+import Component from './services/Component.js';
 
 Handlebars.registerPartial('Button', Button);
 Handlebars.registerPartial('Input', Input);
@@ -22,19 +23,15 @@ interface Chat {
     selected?: boolean;
 }
 
-interface AppState {
-    currentPage: string;
-    isEdit: boolean;
-    chats: Chat[];
-}
+interface AppState { currentPage: string; isEdit: boolean; chats: Chat[]; }
 
-export default class App {
+export default class App extends Component {
     private state: AppState;
-    private appElement: HTMLElement | null;
+    private formValidators: FormValidator[] = [];
 
     constructor() {
         const currentPage = window.location.pathname.split('/').pop() ?? '';
-        this.state = {
+        const initialState = {
             currentPage,
             isEdit: true,
             chats: [
@@ -49,72 +46,74 @@ export default class App {
                 { name: 'Стас Рогозин', preview: 'Можно или сегодня или завтра', time: '12 Апр 2020' }
             ],
         };
-        this.appElement = document.getElementById('app');
+        super('div', initialState);
+        this.state = initialState;
     }
 
-    render(): void {
-        if (!this.appElement) return;
+    render(): string {
+        // Return empty string since we'll handle mounting in componentDidMount
+        return '';
+    }
 
-        let template: HandlebarsTemplateDelegate;
+    componentDidMount(): void {
+        this.mountCurrentPage();
+        this.setupEventListeners();
+    }
+
+    private mountCurrentPage(): void {
+        // Очищаем старые валидаторы форм
+        this.formValidators.forEach(validator => validator.destroy());
+        this.formValidators = [];
+
+        let pageComponent: Component;
         switch (this.state.currentPage) {
             case 'login':
-                template = Handlebars.compile(Pages.LoginPage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new LoginPage({});
                 break;
             case 'registration':
-                template = Handlebars.compile(Pages.RegistrationPage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new RegistrationPage({});
                 break;
             case 'profile':
-                template = Handlebars.compile(Pages.ProfilePage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new ProfilePage({});
                 break;
             case 'chat':
-                template = Handlebars.compile(Pages.ChatPage);
-                this.appElement.innerHTML = template({
-                    chats: this.state.chats,
-                });
+                pageComponent = new ChatPage({ chats: this.state.chats });
                 break;
             case 'change-password':
-                template = Handlebars.compile(Pages.ChangePasswordPage);
-                this.appElement.innerHTML = template({
-                    isEdit: true,
-                });
+                pageComponent = new ChangePasswordPage({ isEdit: true });
                 break;
             case '404':
-                template = Handlebars.compile(Pages.NotFoundPage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new NotFoundPage({});
                 break;
             case '500':
-                template = Handlebars.compile(Pages.ServerErrorPage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new ServerErrorPage({});
                 break;
             default:
-                template = Handlebars.compile(Pages.LoginPage);
-                this.appElement.innerHTML = template({});
+                pageComponent = new LoginPage({});
                 break;
         }
-        this.attachEventListeners();
+
+        const appElement = document.getElementById('app');
+        if (appElement && pageComponent.element) {
+            appElement.innerHTML = '';
+            appElement.appendChild(pageComponent.element);
+            pageComponent.dispatchComponentDidMount();
+        }
     }
 
-    private attachEventListeners(): void {
-        const footerLinks = document.querySelectorAll('.footer-link');
-        const backBtn = document.getElementById('back-button');
-        
-        footerLinks.forEach((link: Element) => {
-            link.addEventListener('click', (e: Event) => {
-                e.preventDefault();
-                const target = e.target as HTMLElement;
-                this.changePage(target.dataset.page ?? '');
-            });
+    private setupEventListeners(): void {
+        // Используем делегирование событий для footer links
+        this.delegateEventListener('.footer-link', 'click', (e: Event) => {
+            e.preventDefault();
+            const target = e.target as HTMLElement;
+            this.changePage(target.dataset.page ?? '');
         });
-        
-        if (backBtn) {
-            backBtn.addEventListener('click', (e: Event) => {
-                e.preventDefault();
-                this.changePage('chat');
-            });
-        }
+
+        // Используем делегирование событий для back button
+        this.delegateEventListener('#back-button', 'click', (e: Event) => {
+            e.preventDefault();
+            this.changePage('chat');
+        });
 
         // Инициализация валидации форм
         this.initializeFormValidation();
@@ -124,31 +123,36 @@ export default class App {
         // Форма авторизации
         const loginForm = document.querySelector('#login-form') as HTMLFormElement;
         if (loginForm) {
-            new FormValidator(loginForm, this.handleLoginSubmit.bind(this));
+            const validator = new FormValidator(loginForm, this.handleLoginSubmit.bind(this));
+            this.formValidators.push(validator);
         }
 
         // Форма регистрации
         const registrationForm = document.querySelector('#registration-form') as HTMLFormElement;
         if (registrationForm) {
-            new FormValidator(registrationForm, this.handleRegistrationSubmit.bind(this));
+            const validator = new FormValidator(registrationForm, this.handleRegistrationSubmit.bind(this));
+            this.formValidators.push(validator);
         }
 
         // Форма профиля
         const profileForm = document.querySelector('#profile-form') as HTMLFormElement;
         if (profileForm) {
-            new FormValidator(profileForm, this.handleProfileSubmit.bind(this));
+            const validator = new FormValidator(profileForm, this.handleProfileSubmit.bind(this));
+            this.formValidators.push(validator);
         }
 
         // Форма смены пароля
         const changePasswordForm = document.querySelector('#change-password-form') as HTMLFormElement;
         if (changePasswordForm) {
-            new FormValidator(changePasswordForm, this.handleChangePasswordSubmit.bind(this));
+            const validator = new FormValidator(changePasswordForm, this.handleChangePasswordSubmit.bind(this));
+            this.formValidators.push(validator);
         }
 
         // Форма отправки сообщения
         const messageForm = document.querySelector('#message-form') as HTMLFormElement;
         if (messageForm) {
-            new FormValidator(messageForm, this.handleMessageSubmit.bind(this));
+            const validator = new FormValidator(messageForm, this.handleMessageSubmit.bind(this));
+            this.formValidators.push(validator);
         }
     }
 
@@ -180,6 +184,16 @@ export default class App {
 
     changePage(page: string): void {
         this.state.currentPage = page;
-        this.render();
+        this.removeAllEventListeners(); // Очищаем старые события
+        this.mountCurrentPage();
+        this.setupEventListeners(); // Устанавливаем события для новой страницы
+    }
+
+    destroy(): void {
+        // Очищаем все валидаторы форм
+        this.formValidators.forEach(validator => validator.destroy());
+        this.formValidators = [];
+        // Вызываем родительский destroy для очистки событий
+        super.destroy();
     }
 }

@@ -18,6 +18,7 @@ export default class Component {
   private _meta: ComponentMeta | null = null;
   protected props: Record<string, any>;
   protected eventBus: () => EventBus;
+  private _eventListeners: Array<{ element: HTMLElement; event: string; handler: EventListener }> = [];
 
   constructor(tagName: string = "div", props: Record<string, any> = {}) {
     const eventBus = new EventBus();
@@ -138,5 +139,44 @@ export default class Component {
     if (content) {
       content.style.display = "none";
     }
+  }
+
+  // Методы для управления DOM событиями
+  protected addEventListener(element: HTMLElement, event: string, handler: EventListener): void {
+    element.addEventListener(event, handler);
+    this._eventListeners.push({ element, event, handler });
+  }
+
+  protected removeEventListener(element: HTMLElement, event: string, handler: EventListener): void {
+    element.removeEventListener(event, handler);
+    this._eventListeners = this._eventListeners.filter(
+      listener => !(listener.element === element && listener.event === event && listener.handler === handler)
+    );
+  }
+
+  protected removeAllEventListeners(): void {
+    this._eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    this._eventListeners = [];
+  }
+
+  // Метод для делегирования событий
+  protected delegateEventListener(selector: string, event: string, handler: EventListener): void {
+    if (!this._element) return;
+    
+    const delegatedHandler = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.matches(selector)) {
+        handler(e);
+      }
+    };
+    
+    this.addEventListener(this._element, event, delegatedHandler);
+  }
+
+  // Переопределяем для очистки событий при уничтожении компонента
+  destroy(): void {
+    this.removeAllEventListeners();
   }
 }
