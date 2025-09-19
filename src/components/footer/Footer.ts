@@ -1,4 +1,10 @@
-export default `<footer class="footer">
+import Component from "../../services/Component";
+
+interface FooterProps extends Record<string, unknown> {
+    class?: string;
+}
+
+const template = `<footer class="footer {{class}}">
     <nav>
         <ul>
             <li>
@@ -19,3 +25,13 @@ export default `<footer class="footer">
         </ul>
     </nav>
 </footer>`;
+
+export default class Footer extends Component<FooterProps> {
+    constructor(props: FooterProps = {}) {
+        super("footer", props);
+    }
+
+    render() {
+        return template;
+    }
+}

@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EventBus } from './EventBus.js';
 
-interface ComponentMeta {
+interface ComponentMeta<Props extends Record<string, unknown> = Record<string, unknown>> {
   tagName: string;
-  props: Record<string, any>;
+  props: Props;
 }
 
-export default class Component {
+export default abstract class Block<Props extends Record<string, unknown> = Record<string, unknown>> {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
@@ -15,12 +14,12 @@ export default class Component {
   } as const;
 
   private _element: HTMLElement | null = null;
-  private _meta: ComponentMeta | null = null;
-  protected props: Record<string, any>;
+  private _meta: ComponentMeta<Props> | null = null;
+  protected props: Props;
   protected eventBus: () => EventBus;
   private _eventListeners: Array<{ element: HTMLElement; event: string; handler: EventListener }> = [];
 
-  constructor(tagName: string = "div", props: Record<string, any> = {}) {
+  constructor(tagName: string = "div", props: Props = {} as Props) {
     const eventBus = new EventBus();
     this._meta = {
       tagName,
@@ -31,14 +30,14 @@ export default class Component {
     this.eventBus = () => eventBus;
 
     this._registerEvents(eventBus);
-    eventBus.emit(Component.EVENTS.INIT);
+    eventBus.emit(Block.EVENTS.INIT);
   }
 
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Component.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Component.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Component.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
-    eventBus.on(Component.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
   }
 
   private _createResources(): void {
@@ -49,7 +48,7 @@ export default class Component {
 
   init(): void {
     this._createResources();
-    this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
   }
 
   private _componentDidMount(): void {
@@ -59,10 +58,10 @@ export default class Component {
   componentDidMount(): void {}
 
   dispatchComponentDidMount(): void {
-    this.eventBus().emit(Component.EVENTS.FLOW_CDM);
+    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
   }
 
-  private _componentDidUpdate(oldProps: Record<string, any>, newProps: Record<string, any>): void {
+  private _componentDidUpdate(oldProps: Props, newProps: Props): void {
     const response = this.componentDidUpdate(oldProps, newProps);
     if (!response) {
       return;
@@ -72,12 +71,12 @@ export default class Component {
 
    
   // eslint-disable-next-line no-unused-vars
-  componentDidUpdate(_oldProps: Record<string, any>, _newProps: Record<string, any>): boolean {
+  componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
     return true;
   }
 
-  setProps = (nextProps: Record<string, any>): void => {
-    if (!nextProps) {
+  setProps = (nextProps: Partial<Props>): void => {
+    if (Object.keys(nextProps).length === 0) {
       return;
     }
 
@@ -103,18 +102,18 @@ export default class Component {
     return this.element;
   }
 
-  private _makePropsProxy(props: Record<string, any>): Record<string, any> {
+  private _makePropsProxy(props: Props): Props {
     const self = this;
 
     return new Proxy(props, {
-      get(target: Record<string, any>, prop: string) {
-        const value = target[prop];
+      get(target: Props, prop: string): unknown {
+        const value = target[prop as keyof Props];
         return typeof value === "function" ? value.bind(target) : value;
       },
-      set(target: Record<string, any>, prop: string, value: any): boolean {
-        target[prop] = value;
+      set(target: Props, prop: string, value: unknown): boolean {
+        (target as Record<string, unknown>)[prop] = value;
         
-        self.eventBus().emit(Component.EVENTS.FLOW_CDU, {...target}, target);
+        self.eventBus().emit(Block.EVENTS.FLOW_CDU, {...target}, target);
         return true;
       },
       deleteProperty(): never {

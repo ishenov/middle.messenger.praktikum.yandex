@@ -1,5 +1,7 @@
 import Handlebars from 'handlebars';
+
 import Component from "../../services/Component";
+
 import template from './ChangePassword.hbs?raw';
 
 export default class ChangePasswordPage extends Component {

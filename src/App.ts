@@ -1,19 +1,20 @@
 import Handlebars from 'handlebars';
 
-import Button from "./components/button/template";
-import Footer from "./components/Footer.js";
-import Input from "./components/Input.js";
-import Link from "./components/Link.js";
-import ValidatedInput from "./components/ValidatedInput.js";
+import ButtonTemplate from "./components/button/template";
+import FooterTemplate from "./components/footer/Footer.template.js";
+import InputTemplate from "./components/input/Input.template.js";
+import LinkTemplate from "./components/link/Link.template.js";
+import ValidatedInputTemplate from "./components/validated-input/ValidatedInput.template.js";
 import { LoginPage, RegistrationPage, ChatPage, ProfilePage, ChangePasswordPage, NotFoundPage, ServerErrorPage } from './pages/index.js';
-import { FormValidator } from './services/FormValidator.js';
 import Component from './services/Component.js';
+import { FormValidator } from './services/FormValidator.js';
 
-Handlebars.registerPartial('Button', Button);
-Handlebars.registerPartial('Input', Input);
-Handlebars.registerPartial('ValidatedInput', ValidatedInput);
-Handlebars.registerPartial('Link', Link);
-Handlebars.registerPartial('Footer', Footer);
+// Регистрируем компоненты как частичные шаблоны
+Handlebars.registerPartial('Button', ButtonTemplate);
+Handlebars.registerPartial('Input', InputTemplate);
+Handlebars.registerPartial('ValidatedInput', ValidatedInputTemplate);
+Handlebars.registerPartial('Link', LinkTemplate);
+Handlebars.registerPartial('Footer', FooterTemplate);
 
 interface Chat {
     name: string;
