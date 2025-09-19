@@ -6,7 +6,7 @@ interface ComponentMeta {
   props: Record<string, any>;
 }
 
-export default class Block {
+export default class Component {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
@@ -30,14 +30,14 @@ export default class Block {
     this.eventBus = () => eventBus;
 
     this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+    eventBus.emit(Component.EVENTS.INIT);
   }
 
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Component.EVENTS.INIT, this.init.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_RENDER, this._render.bind(this));
   }
 
   private _createResources(): void {
@@ -48,7 +48,7 @@ export default class Block {
 
   init(): void {
     this._createResources();
-    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
   }
 
   private _componentDidMount(): void {
@@ -58,7 +58,7 @@ export default class Block {
   componentDidMount(): void {}
 
   dispatchComponentDidMount(): void {
-    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
+    this.eventBus().emit(Component.EVENTS.FLOW_CDM);
   }
 
   private _componentDidUpdate(oldProps: Record<string, any>, newProps: Record<string, any>): void {
@@ -113,7 +113,7 @@ export default class Block {
       set(target: Record<string, any>, prop: string, value: any): boolean {
         target[prop] = value;
         
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, {...target}, target);
+        self.eventBus().emit(Component.EVENTS.FLOW_CDU, {...target}, target);
         return true;
       },
       deleteProperty(): never {

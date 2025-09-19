@@ -1,6 +1,6 @@
 import Handlebars, { HandlebarsTemplateDelegate } from 'handlebars';
 
-import Button from "./components/Button.js";
+import Button from "./components/button/Button";
 import Footer from "./components/Footer.js";
 import Input from "./components/Input.js";
 import Link from "./components/Link.js";
