@@ -12,8 +12,8 @@
     "start": "vite build && node server.cjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx --fix",
-    "lint:check": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src --fix",
+    "lint:check": "eslint src",
     "stylelint": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts --fix",
     "stylelint:check": "stylelint \"src/**/*.{css,pcss}\" --config stylelint.config.ts",
     "lint:all": "npm run lint:check && npm run stylelint:check && npm run type-check"

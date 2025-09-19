@@ -1,63 +1,119 @@
-## Установка
+# Messenger App
 
-- 1. `npm install`,
-- 2. `npm run dev` — запуск dev сервера
-- 3. `npm run build` — сборка проекта
-- 4. `npm run type-check` — проверка типов TypeScript
+Веб-приложение мессенджера, построенное с использованием TypeScript, Handlebars и Vite.
 
-## Линтеры
+## Функциональность
 
-- `npm run lint` — ESLint с автоматическим исправлением
-- `npm run lint:check` — проверка ESLint
-- `npm run stylelint` — Stylelint с автоматическим исправлением
-- `npm run stylelint:check` — проверка Stylelint
-- `npm run lint:all` — проверка всех линтеров и типов
+- Страницы авторизации и регистрации
+- Профиль пользователя
+- Чат с сообщениями
+- Смена пароля
+- Валидация форм
+- Роутинг между страницами
+
+## Технологии
+
+- **TypeScript** - типизированный JavaScript
+- **Handlebars** - шаблонизатор
+- **Vite** - сборщик проекта
+- **PostCSS** - обработка CSS
+- **ESLint** - линтер для TypeScript
+- **Stylelint** - линтер для CSS
+
+## HTTP Transport
+
+Реализован собственный класс `HTTPTransport` для работы с HTTP-запросами:
+
+- Использует только XMLHttpRequest и Promise
+- Поддерживает методы GET, POST, PUT, DELETE
+- Работа с query параметрами в GET-запросах
+- Поддержка body для POST, PUT, DELETE запросов
+- Обработка ошибок и таймаутов
+- Полная типизация TypeScript
+
+### Пример использования
+
+```typescript
+import { HTTPTransport } from './services/HTTPTransport';
+
+const http = new HTTPTransport('https://api.example.com');
+
+// GET запрос с параметрами
+const users = await http.get('/users', { page: '1', limit: '10' });
+
+// POST запрос с данными
+const newUser = await http.post('/users', { name: 'John', email: 'john@example.com' });
+
+// PUT запрос
+const updatedUser = await http.put('/users/1', { name: 'John Updated' });
+
+// DELETE запрос
+await http.delete('/users/1');
+```
+
+## Установка и запуск
+
+```bash
+# Установка зависимостей
+npm install
+
+# Запуск в режиме разработки
+npm run dev
+
+# Сборка проекта
+npm run build
+
+# Запуск собранного проекта
+npm start
+```
+
+## Линтинг и проверка кода
+
+```bash
+# Проверка TypeScript
+npm run type-check
+
+# Проверка ESLint
+npm run lint:check
+
+# Автоматическое исправление ESLint
+npm run lint
+
+# Проверка Stylelint
+npm run stylelint:check
+
+# Автоматическое исправление Stylelint
+npm run stylelint
+
+# Запуск всех проверок
+npm run lint:all
+```
+
+## Структура проекта
+
+```
+src/
+├── components/          # Компоненты UI
+├── pages/              # Страницы приложения
+├── services/           # Сервисы (HTTPTransport, валидация)
+├── styles/             # CSS стили
+├── types/              # TypeScript типы
+└── main.ts             # Точка входа
+```
 
 ## Конфигурация
 
-Все конфигурационные файлы написаны на TypeScript:
-- `eslint.config.js` — конфигурация ESLint
-- `stylelint.config.ts` — конфигурация Stylelint
-- `postcss.config.ts` — конфигурация PostCSS
-- `vite.config.ts` — конфигурация Vite
-- `tsconfig.json` — конфигурация TypeScript
+- **ESLint** - настроен с правилами для TypeScript, включает правила безопасности и качества кода
+- **Stylelint** - настроен с правилами для CSS, включает порядок свойств и проверку селекторов
+- **EditorConfig** - настройки редактора для единообразия кода
+- **TypeScript** - строгая типизация с проверкой типов
 
-## Валидация форм
+## Особенности реализации
 
-Проект включает единую систему валидации для всех форм:
-
-### Правила валидации:
-- **first_name, second_name** — латиница или кириллица, первая буква заглавная, без пробелов и цифр, только дефис
-- **login** — от 3 до 20 символов, латиница, может содержать цифры, дефис и подчеркивание
-- **email** — латиница, может включать цифры и спецсимволы, обязательно @ и точка после неё
-- **password** — от 8 до 40 символов, обязательно заглавная буква и цифра
-- **phone** — от 10 до 15 символов, только цифры, может начинаться с +
-- **message** — не должно быть пустым
-
-### Механизм валидации:
-- Валидация происходит по событию `blur` (потеря фокуса)
-- Повторная проверка при отправке формы (`submit`)
-- Автоматическое отображение ошибок под полями
-- Визуальная индикация невалидных полей
-- Валидация в реальном времени при вводе (если поле уже имеет ошибку)
-
-### Тестирование валидации:
-Для тестирования валидации перейдите на страницу `/test` или нажмите "Test Validation" в футере.
-
-### Логирование:
-Данные форм выводятся в консоль браузера только при успешной отправке формы:
-- Заполненные данные выводятся после успешной валидации
-- Детальная информация по каждому полю для каждой формы
-- Автоматическая очистка полей после отправки (для login, registration, test форм)
-
-ui - https://www.figma.com/design/jF5fFFzgGOxQeB4CmKWTiE/Chat_external_link?node-id=1-616&t=Xuy0VkLhvFHOZgWT-0
-
-https://chat911.netlify.app/
-
-http://localhost:3000/login - Страница логина
-http://localhost:3000/registration - Страница регистрации
-http://localhost:3000/chat - Страница чата
-http://localhost:3000/profile - Страница профиля
-http://localhost:3000/404 - Страница 404
-http://localhost:3000/500 Станица 500
+1. **HTTPTransport** - собственная реализация HTTP-клиента без использования fetch или axios
+2. **Валидация форм** - клиентская валидация с отображением ошибок
+3. **Роутинг** - простой роутинг на основе URL
+4. **Компонентная архитектура** - переиспользуемые компоненты
+5. **Типизация** - полная типизация TypeScript
+6. **Линтинг** - строгие правила для поддержания качества кода
 
