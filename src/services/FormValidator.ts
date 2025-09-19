@@ -54,15 +54,15 @@ export class FormValidator extends Component {
 
   private handleSubmit(event: Event): void {
     event.preventDefault();
-    
+
     const formData = this.getFormData();
     const validationResults = ValidationService.validateForm(formData);
-    
+
     // Логируем только если форма валидна
     if (ValidationService.isFormValid(validationResults)) {
       console.log('Данные формы:', formData);
     }
-    
+
     // Обновляем все поля
     Object.keys(validationResults).forEach(fieldName => {
       this.validationResults[fieldName] = validationResults[fieldName];
@@ -87,7 +87,7 @@ export class FormValidator extends Component {
   }
 
   private updateFieldDisplay(fieldName: string, inputElement?: HTMLInputElement): void {
-    const input = inputElement || this.formElement.querySelector(`[data-field="${fieldName}"]`) as HTMLInputElement;
+    const input = inputElement ?? this.formElement.querySelector(`[data-field="${fieldName}"]`) as HTMLInputElement;
     if (!input) return;
 
     const result = this.validationResults[fieldName];
@@ -111,7 +111,7 @@ export class FormValidator extends Component {
   private getFormData(): Record<string, string> {
     const formData: Record<string, string> = {};
     const inputs = this.formElement.querySelectorAll('input[data-field]') as NodeListOf<HTMLInputElement>;
-    
+
     inputs.forEach(input => {
       const fieldName = input.dataset.field;
       if (fieldName) {
