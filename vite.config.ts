@@ -10,6 +10,9 @@ export default defineConfig({
         },
     },
     css: {
-        postcss: './postcss.config.js',
+        postcss: './postcss.config.ts',
     },
+    resolve: {
+        extensions: ['.js', '.ts', '.jsx', '.tsx', '.json']
+    }
 });
