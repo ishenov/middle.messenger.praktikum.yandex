@@ -5,7 +5,7 @@ interface ComponentMeta<Props extends Record<string, unknown> = Record<string, u
   props: Props;
 }
 
-export default abstract class Block<Props extends Record<string, unknown> = Record<string, unknown>> {
+export default abstract class Component<Props extends Record<string, unknown> = Record<string, unknown>> {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
@@ -30,14 +30,14 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
     this.eventBus = () => eventBus;
 
     this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+    eventBus.emit(Component.EVENTS.INIT);
   }
 
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Component.EVENTS.INIT, this.init.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_RENDER, this._render.bind(this));
   }
 
   private _createResources(): void {
@@ -48,7 +48,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
 
   init(): void {
     this._createResources();
-    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
   }
 
   private _componentDidMount(): void {
@@ -58,7 +58,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   componentDidMount(): void {}
 
   dispatchComponentDidMount(): void {
-    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
+    this.eventBus().emit(Component.EVENTS.FLOW_CDM);
   }
 
   private _componentDidUpdate(oldProps: Props, newProps: Props): void {
@@ -69,7 +69,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
     this._render();
   }
 
-   
+
   // eslint-disable-next-line no-unused-vars
   componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
     return true;
@@ -112,8 +112,8 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
       },
       set(target: Props, prop: string, value: unknown): boolean {
         (target as Record<string, unknown>)[prop] = value;
-        
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, {...target}, target);
+
+        self.eventBus().emit(Component.EVENTS.FLOW_CDU, {...target}, target);
         return true;
       },
       deleteProperty(): never {
@@ -163,14 +163,14 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   // Метод для делегирования событий
   protected delegateEventListener(selector: string, event: string, handler: EventListener): void {
     if (!this._element) return;
-    
+
     const delegatedHandler = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.matches(selector)) {
         handler(e);
       }
     };
-    
+
     this.addEventListener(this._element, event, delegatedHandler);
   }
 

@@ -1,5 +1,5 @@
 import { Route } from './Route';
-import Block from './Component';
+// import Component from './Component';
 
 export class Router {
   private static __instance: Router;
@@ -22,13 +22,15 @@ export class Router {
     Router.__instance = this;
   }
 
-  use(pathname: string, block: typeof Block): this {
+  use(pathname: string, block: any): this {
     const route = new Route(pathname, block, { rootQuery: this._rootQuery });
+    console.log(route)
     this.routes.push(route);
     return this;
   }
 
   start(): void {
+    console.log('start')
     window.onpopstate = ((event: PopStateEvent) => {
       const target = event.currentTarget as Window;
       this._onRoute(target.location.pathname);

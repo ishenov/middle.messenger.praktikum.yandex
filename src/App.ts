@@ -1,20 +1,19 @@
 import Handlebars from 'handlebars';
 
 import ButtonTemplate from "./components/button/template";
-import FooterTemplate from "./components/footer/Footer.template.js";
 import InputTemplate from "./components/input/Input.template.js";
 import LinkTemplate from "./components/link/Link.template.js";
 import ValidatedInputTemplate from "./components/validated-input/ValidatedInput.template.js";
 import { LoginPage, RegistrationPage, ChatPage, ProfilePage, ChangePasswordPage, NotFoundPage, ServerErrorPage } from './pages/index.js';
 import Component from './services/Component.js';
 import { FormValidator } from './services/FormValidator.js';
+import Router from "./services/Router";
 
 // Регистрируем компоненты как частичные шаблоны
 Handlebars.registerPartial('Button', ButtonTemplate);
 Handlebars.registerPartial('Input', InputTemplate);
 Handlebars.registerPartial('ValidatedInput', ValidatedInputTemplate);
 Handlebars.registerPartial('Link', LinkTemplate);
-Handlebars.registerPartial('Footer', FooterTemplate);
 
 interface Chat {
     name: string;
@@ -49,6 +48,19 @@ export default class App extends Component {
         };
         super('div', initialState);
         this.state = initialState;
+
+      const router = new Router("#app");
+      console.log(router)
+      router
+        .use("/", ChatPage)
+        .use("/sign-up", LoginPage)
+        .use("/registration", RegistrationPage)
+        .use("/settings", ProfilePage)
+        .use("/messenger", ChatPage)
+        .use("/change-password", ChangePasswordPage)
+        .use("/404", NotFoundPage)
+        .use("/500", ServerErrorPage)
+        .start();
     }
 
     render(): string {
@@ -57,67 +69,7 @@ export default class App extends Component {
     }
 
     componentDidMount(): void {
-        this.mountCurrentPage();
-        this.setupEventListeners();
-    }
-
-    private mountCurrentPage(): void {
-        // Очищаем старые валидаторы форм
-        this.formValidators.forEach(validator => validator.destroy());
-        this.formValidators = [];
-
-        let pageComponent: Component;
-        switch (this.state.currentPage) {
-            case 'login':
-                pageComponent = new LoginPage({});
-                break;
-            case 'registration':
-                pageComponent = new RegistrationPage({});
-                break;
-            case 'profile':
-                pageComponent = new ProfilePage({});
-                break;
-            case 'chat':
-                pageComponent = new ChatPage({ chats: this.state.chats });
-                break;
-            case 'change-password':
-                pageComponent = new ChangePasswordPage({ isEdit: true });
-                break;
-            case '404':
-                pageComponent = new NotFoundPage({});
-                break;
-            case '500':
-                pageComponent = new ServerErrorPage({});
-                break;
-            default:
-                pageComponent = new LoginPage({});
-                break;
-        }
-
-        const appElement = document.getElementById('app');
-        if (appElement && pageComponent.element) {
-            appElement.innerHTML = '';
-            appElement.appendChild(pageComponent.element);
-            pageComponent.dispatchComponentDidMount();
-        }
-    }
-
-    private setupEventListeners(): void {
-        // Используем делегирование событий для footer links
-        this.delegateEventListener('.footer-link', 'click', (e: Event) => {
-            e.preventDefault();
-            const target = e.target as HTMLElement;
-            this.changePage(target.dataset.page ?? '');
-        });
-
-        // Используем делегирование событий для back button
-        this.delegateEventListener('#back-button', 'click', (e: Event) => {
-            e.preventDefault();
-            this.changePage('chat');
-        });
-
-        // Инициализация валидации форм
-        this.initializeFormValidation();
+      this.initializeFormValidation();
     }
 
     private initializeFormValidation(): void {
@@ -186,8 +138,6 @@ export default class App extends Component {
     changePage(page: string): void {
         this.state.currentPage = page;
         this.removeAllEventListeners(); // Очищаем старые события
-        this.mountCurrentPage();
-        this.setupEventListeners(); // Устанавливаем события для новой страницы
     }
 
     destroy(): void {

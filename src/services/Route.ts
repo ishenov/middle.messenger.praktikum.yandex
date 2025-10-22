@@ -1,4 +1,4 @@
-import Block from './Component';
+import Component from './Component';
 import { render } from '../utils/renderDOM';
 
 interface RouteProps {
@@ -7,11 +7,11 @@ interface RouteProps {
 
 export class Route {
   private _pathname: string;
-  private _blockClass: typeof Block;
-  private _block: Block | null;
+  private _blockClass: typeof Component;
+  private _block: Component | null;
   private _props: RouteProps;
 
-  constructor(pathname: string, view: typeof Block, props: RouteProps) {
+  constructor(pathname: string, view: typeof Component, props: RouteProps) {
     this._pathname = pathname;
     this._blockClass = view;
     this._block = null;
