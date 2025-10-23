@@ -12,11 +12,11 @@ export interface HTTPTransportResponse<T = unknown> {
   headers: Record<string, string>;
 }
 
-export class HTTPTransport {
+class HTTPTransport {
   private baseURL: string;
 
   constructor(baseURL: string = '') {
-    this.baseURL = baseURL;
+    this.baseURL = 'https://ya-praktikum.tech/api/v2' + baseURL;
   }
 
   private createXHR(): XMLHttpRequest {
@@ -26,7 +26,7 @@ export class HTTPTransport {
   private parseHeaders(headersString: string): Record<string, string> {
     const headers: Record<string, string> = {};
     const lines = headersString.trim().split('\n');
-    
+
     lines.forEach((line) => {
       const index = line.indexOf(':');
       if (index > 0) {
@@ -35,25 +35,25 @@ export class HTTPTransport {
         headers[key] = value;
       }
     });
-    
+
     return headers;
   }
 
   private buildURL(url: string, queryParams?: Record<string, string>): string {
     const fullURL = this.baseURL + url;
-    
+
     if (!queryParams || Object.keys(queryParams).length === 0) {
       return fullURL;
     }
 
     const urlObj = new URL(fullURL, window.location.origin);
-    
+
     Object.entries(queryParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         urlObj.searchParams.append(key, String(value));
       }
     });
-    
+
     return urlObj.toString();
   }
 
@@ -73,7 +73,7 @@ export class HTTPTransport {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status >= 200 && xhr.status < 300) {
             let responseData: T;
-            
+
             try {
               responseData = xhr.responseText ? JSON.parse(xhr.responseText) : null as T;
             } catch {
@@ -86,7 +86,7 @@ export class HTTPTransport {
               data: responseData,
               headers: this.parseHeaders(xhr.getAllResponseHeaders()),
             };
-            
+
             resolve(response);
           } else {
             reject(new Error(`HTTP Error ${xhr.status}: ${xhr.statusText}`));
@@ -125,7 +125,7 @@ export class HTTPTransport {
     });
   }
 
-  public get<T = unknown>(
+  public get<T>(
     url: string,
     queryParams?: Record<string, string>,
     options: Partial<HTTPTransportOptions> = {}
@@ -137,7 +137,7 @@ export class HTTPTransport {
     });
   }
 
-  public post<T = unknown>(
+  public post<T>(
     url: string,
     data?: unknown,
     options: Partial<HTTPTransportOptions> = {}
@@ -150,7 +150,7 @@ export class HTTPTransport {
     });
   }
 
-  public put<T = unknown>(
+  public put<T>(
     url: string,
     data?: unknown,
     options: Partial<HTTPTransportOptions> = {}
@@ -163,7 +163,7 @@ export class HTTPTransport {
     });
   }
 
-  public delete<T = unknown>(
+  public delete<T>(
     url: string,
     data?: unknown,
     options: Partial<HTTPTransportOptions> = {}
@@ -176,3 +176,5 @@ export class HTTPTransport {
     });
   }
 }
+
+export default HTTPTransport;
