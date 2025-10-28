@@ -21,6 +21,8 @@ export default class Button extends Component<ButtonProps> {
       ...props,
       events: {
         click: (e: Event) => {
+            e.preventDefault()
+            e.stopPropagation()
           if (props.onClick) {
             props.onClick(e);
           }

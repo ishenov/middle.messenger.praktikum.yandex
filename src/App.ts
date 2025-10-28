@@ -8,6 +8,7 @@ import { LoginPage, RegistrationPage, ChatPage, ProfilePage, ChangePasswordPage,
 import Component from './services/Component.js';
 import { FormValidator } from './services/FormValidator.js';
 import Router from "./services/Router";
+import HTTPTransport from "./services/HTTPTransport";
 
 // Регистрируем компоненты как частичные шаблоны
 Handlebars.registerPartial('Button', ButtonTemplate);
@@ -28,6 +29,8 @@ interface AppState { currentPage: string; isEdit: boolean; chats: Chat[]; }
 export default class App extends Component {
     private state: AppState;
     private formValidators: FormValidator[] = [];
+    private api: HTTPTransport;
+    private router: Router;
 
     constructor() {
         const currentPage = window.location.pathname.split('/').pop() ?? '';
@@ -49,12 +52,13 @@ export default class App extends Component {
         super('div', initialState);
         this.state = initialState;
 
-      const router = new Router("#app");
-      console.log(router)
-      router
+      this.router = new Router("#app");
+      this.api = new HTTPTransport();
+
+      this.router
         .use("/", ChatPage)
-        .use("/sign-up", LoginPage)
-        .use("/registration", RegistrationPage)
+        .use("/sign-in", LoginPage)
+        .use("/sign-up", RegistrationPage)
         .use("/settings", ProfilePage)
         .use("/messenger", ChatPage)
         .use("/change-password", ChangePasswordPage)
@@ -69,6 +73,7 @@ export default class App extends Component {
     }
 
     componentDidMount(): void {
+      this.api.get('/auth/user');
       this.initializeFormValidation();
     }
 
@@ -109,16 +114,22 @@ export default class App extends Component {
         }
     }
 
-    private handleLoginSubmit(formData: Record<string, string>): void {
-        console.log('Login form submitted:', formData);
-        // Здесь будет логика авторизации
-        this.changePage('chat');
+    private async handleLoginSubmit(formData: Record<string, string>) {
+      console.log('Login form submitted:', formData);
+      const response = await this.api.post('/auth/signin', formData);
+
+      if (response.status === 200) {
+        this.router.go('/messenger');
+      }
     }
 
-    private handleRegistrationSubmit(formData: Record<string, string>): void {
-        console.log('Registration form submitted:', formData);
-        // Здесь будет логика регистрации
-        this.changePage('chat');
+    private async handleRegistrationSubmit(formData: Record<string, string>) {
+      console.log('Registration form submitted:', formData);
+      const response = await this.api.post('/auth/signup', formData);
+
+      if (response.status === 200) {
+        this.router.go('/messenger');
+      }
     }
 
     private handleProfileSubmit(formData: Record<string, string>): void {

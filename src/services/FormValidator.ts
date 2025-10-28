@@ -54,6 +54,7 @@ export class FormValidator extends Component {
 
   private handleSubmit(event: Event): void {
     event.preventDefault();
+    event.stopPropagation();
 
     const formData = this.getFormData();
     const validationResults = ValidationService.validateForm(formData);
@@ -75,7 +76,7 @@ export class FormValidator extends Component {
         this.onSubmitCallback(formData);
       }
       // Очищаем поля после успешной отправки (кроме профиля и смены пароля)
-      this.clearFormIfNeeded();
+      // this.clearFormIfNeeded();
     } else {
       // Показываем ошибки для всех невалидных полей
       this.showAllErrors();
@@ -128,26 +129,26 @@ export class FormValidator extends Component {
     });
   }
 
-  private clearFormIfNeeded(): void {
-    const formId = this.formElement.id;
-    // Очищаем только определенные формы
-    if (formId === 'login-form' || formId === 'registration-form' || formId === 'test-form') {
-      const inputs = this.formElement.querySelectorAll('input[data-field]') as NodeListOf<HTMLInputElement>;
-      inputs.forEach(input => {
-        input.value = '';
-        // Убираем класс ошибки
-        input.classList.remove('input-error-text');
-        // Скрываем сообщение об ошибке
-        const wrapper = input.closest('.input-wrapper');
-        const errorElement = wrapper?.querySelector('.input-error') as HTMLElement;
-        if (errorElement) {
-          errorElement.style.display = 'none';
-        }
-      });
-      // Очищаем результаты валидации
-      this.validationResults = {};
-    }
-  }
+  // private clearFormIfNeeded(): void {
+  //   const formId = this.formElement.id;
+  //   // Очищаем только определенные формы
+  //   if (formId === 'login-form' || formId === 'registration-form') {
+  //     const inputs = this.formElement.querySelectorAll('input[data-field]') as NodeListOf<HTMLInputElement>;
+  //     inputs.forEach(input => {
+  //       input.value = '';
+  //       // Убираем класс ошибки
+  //       input.classList.remove('input-error-text');
+  //       // Скрываем сообщение об ошибке
+  //       const wrapper = input.closest('.input-wrapper');
+  //       const errorElement = wrapper?.querySelector('.input-error') as HTMLElement;
+  //       if (errorElement) {
+  //         errorElement.style.display = 'none';
+  //       }
+  //     });
+  //     // Очищаем результаты валидации
+  //     this.validationResults = {};
+  //   }
+  // }
 
   public destroy(): void {
     // Используем метод из Component для очистки всех событий
