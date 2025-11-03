@@ -1,6 +1,7 @@
 import Component from "../../services/Component";
 
 import template from "./template";
+import Handlebars from "handlebars";
 
 interface ButtonProps extends Record<string, unknown> {
   id?: string;
@@ -9,10 +10,8 @@ interface ButtonProps extends Record<string, unknown> {
   disabled?: boolean;
   text: string;
   events: {
-    click: any
+    click(e: Event): void;
   }
-
-  onClick(e: Event): void;
 }
 
 export default class Button extends Component<ButtonProps> {
@@ -23,18 +22,17 @@ export default class Button extends Component<ButtonProps> {
         click: (e: Event) => {
             e.preventDefault()
             e.stopPropagation()
+          console.log(props.onClick)
           if (props.onClick) {
-            props.onClick(e);
+            props.events.click(e);
           }
         },
       },
     });
-    this.props.events = {
-      click: this.props.onClick || (() => {}),
-    };
   }
 
   render() {
-    return template;
+    const compiled = Handlebars.compile(template);
+    return compiled(this.props);
   }
 }

@@ -40,6 +40,16 @@ export default abstract class Component<Props extends Record<string, unknown> = 
     eventBus.on(Component.EVENTS.FLOW_RENDER, this._render.bind(this));
   }
 
+  private _addEvents() {
+    const {events = {}} = this.props;
+
+    // @ts-ignore
+    Object.keys(events).forEach(eventName => {
+      // @ts-ignore
+      this._element?.addEventListener(eventName, events[eventName]);
+    });
+  }
+
   private _createResources(): void {
     if (!this._meta) return;
     const { tagName } = this._meta;
@@ -92,6 +102,8 @@ export default abstract class Component<Props extends Record<string, unknown> = 
     if (this._element && block) {
       this._element.innerHTML = block;
     }
+
+    this._addEvents();
   }
 
   render(): string {

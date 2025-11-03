@@ -1,3 +1,5 @@
+import Router from "./Router";
+
 export interface HTTPTransportOptions {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: Record<string, string>;
@@ -14,6 +16,7 @@ export interface HTTPTransportResponse<T = unknown> {
 
 class HTTPTransport {
   private baseURL: string;
+  private router: Router = new Router('#app');
 
   constructor(baseURL: string = '') {
     this.baseURL = 'https://ya-praktikum.tech/api/v2' + baseURL;
@@ -67,6 +70,7 @@ class HTTPTransport {
 
       // Set timeout
       xhr.timeout = timeout;
+      xhr.withCredentials = true;
 
       // Set up event handlers
       xhr.onreadystatechange = () => {
@@ -89,6 +93,9 @@ class HTTPTransport {
 
             resolve(response);
           } else {
+            if (xhr.status === 401) {
+              this.router.go('/sign-in');
+            }
             reject(new Error(`HTTP Error ${xhr.status}: ${xhr.statusText}`));
           }
         }

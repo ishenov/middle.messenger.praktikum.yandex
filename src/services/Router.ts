@@ -24,13 +24,11 @@ export class Router {
 
   use(pathname: string, block: any): this {
     const route = new Route(pathname, block, { rootQuery: this._rootQuery });
-    console.log(route)
     this.routes.push(route);
     return this;
   }
 
   start(): void {
-    console.log('start')
     window.onpopstate = ((event: PopStateEvent) => {
       const target = event.currentTarget as Window;
       this._onRoute(target.location.pathname);

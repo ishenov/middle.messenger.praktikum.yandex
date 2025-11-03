@@ -1,7 +1,7 @@
 <div class="messenger">
     <aside class="sidebar">
         <div class="header">
-            <div class="profile-link" data-page="profile">Профиль &gt;</div>
+            <div class="profile-link" id="profile-link" data-page="profile">Профиль &gt;</div>
         </div>
         <div>
             {{> Input id="search" type="text" placeholder="Поиск" class="search"}}
@@ -10,15 +10,15 @@
         <ul class="chat-list">
             {{#each chats}}
                 <li class="chat-item {{#if selected}}selected{{/if}}">
-                    <div class="avatar"></div>
+                    <div class="avatar"><img src="{{avatar}}" alt=""></div>
                     <div class="chat-info">
-                        <div class="chat-title">{{name}}</div>
-                        <div class="chat-preview">{{preview}}</div>
+                        <div class="chat-title">{{title}}</div>
+                        <div class="chat-preview">{{last_message.content}}</div>
                     </div>
                     {{#if unread}}
-                        <div class="unread-count">{{unread}}</div>
+                        <div class="unread-count">{{unread_count}}</div>
                     {{/if}}
-                    <div class="chat-time">{{time}}</div>
+                    <div class="chat-time">{{last_message.time}}</div>
                 </li>
             {{/each}}
         </ul>
