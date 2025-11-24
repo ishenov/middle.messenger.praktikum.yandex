@@ -1,14 +1,14 @@
 <div class="login-page">
     <h1 class="login-page-title">Зарегистрироваться</h1>
     <form id="registration-form">
-        {{> ValidatedInput id="email" type="email" placeholder="Почта" fieldName="email"}}
-        {{> ValidatedInput id="login" type="text" placeholder="Логин" fieldName="login"}}
-        {{> ValidatedInput id="first_name" type="text" placeholder="Имя" fieldName="first_name"}}
-        {{> ValidatedInput id="second_name" type="text" placeholder="Фамилия" fieldName="second_name"}}
-        {{> ValidatedInput id="phone" type="tel" placeholder="Телефон" fieldName="phone"}}
-        {{> ValidatedInput id="password" type="password" placeholder="Пароль" fieldName="password"}}
-        {{> ValidatedInput id="password2" type="password" placeholder="Повторите пароль" fieldName="password"}}
-        {{> Button id="registration" text="Зарегистрироваться" type="submit"}}
-        {{> Button id="signin" text="Войти" class="secondary" type="button"}}
+        {{{ emailInput }}}
+        {{{ loginInput }}}
+        {{{ firstNameInput }}}
+        {{{ secondNameInput }}}
+        {{{ phoneInput }}}
+        {{{ passwordInput }}}
+        {{{ password2Input }}}
+        {{{ registrationButton }}}
+        {{{ signinButton }}}
     </form>
 </div>

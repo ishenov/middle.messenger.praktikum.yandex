@@ -1,0 +1,11 @@
+<div class="modal-overlay" style="{{#if isOpen}}display: flex;{{else}}display: none;{{/if}}">
+  <div class="modal-content">
+    <button class="modal-close-btn">&times;</button>
+    {{#if title}}
+      <h2 class="modal-title">{{title}}</h2>
+    {{/if}}
+    <div class="modal-body">
+      {{{ content }}}
+    </div>
+  </div>
+</div>

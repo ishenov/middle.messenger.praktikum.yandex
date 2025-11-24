@@ -1,6 +1,6 @@
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 
-interface InputProps extends Record<string, unknown> {
+interface InputProps extends Props {
     id?: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
     placeholder?: string;
@@ -13,7 +13,7 @@ interface InputProps extends Record<string, unknown> {
 
 const template = `<input id="{{id}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input {{class}}" name="{{name}}" {{#if required}}required{{/if}} {{#if disabled}}disabled{{/if}}>`;
 
-export default class Input extends Component<InputProps> {
+export default class Input extends Component {
     constructor(props: InputProps) {
         super("input", props);
     }

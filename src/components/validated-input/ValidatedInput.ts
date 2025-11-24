@@ -1,6 +1,8 @@
-import Component from "../../services/Component";
+import Handlebars from 'handlebars';
+import Component, { Props } from "../../services/Component";
+import template from "./ValidatedInput.template";
 
-interface ValidatedInputProps extends Record<string, unknown> {
+interface ValidatedInputProps extends Props {
     id?: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
     placeholder?: string;
@@ -12,26 +14,13 @@ interface ValidatedInputProps extends Record<string, unknown> {
     errorMessage?: string;
 }
 
-const template = `<div class="input-wrapper">
-  <input 
-    id="{{id}}" 
-    type="{{type}}" 
-    placeholder="{{placeholder}}" 
-    value="{{value}}" 
-    class="input {{class}}"
-    data-field="{{fieldName}}"
-    {{#if required}}required{{/if}}
-    {{#if disabled}}disabled{{/if}}
-  >
-  <div class="input-error" style="display: none;">{{errorMessage}}</div>
-</div>`;
-
-export default class ValidatedInput extends Component<ValidatedInputProps> {
+export default class ValidatedInput extends Component {
     constructor(props: ValidatedInputProps) {
         super("div", props);
     }
 
     render() {
-        return template;
+        const compiled = Handlebars.compile(template);
+        return compiled(this.props);
     }
 }

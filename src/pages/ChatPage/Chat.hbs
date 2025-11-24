@@ -1,10 +1,10 @@
 <div class="messenger">
     <aside class="sidebar">
         <div class="header">
-            <div class="profile-link" id="profile-link" data-page="profile">Профиль &gt;</div>
+            {{{ profileLinkButton }}}
         </div>
         <div>
-            {{> Input id="search" type="text" placeholder="Поиск" class="search"}}
+            {{{ searchInput }}}
         </div>
 
         <ul class="chat-list">
@@ -50,9 +50,9 @@
         </div>
 
         <form id="message-form" class="chat-input">
-            {{> Button id="file-button" text="📎" class="file-button" type="button"}}
-            {{> ValidatedInput id="message" type="text" placeholder="Сообщение" fieldName="message"}}
-            {{> Button id="send-button" text="➤" class="send-button" type="submit"}}
+            {{{ fileButton }}}
+            {{{ messageInput }}}
+            {{{ sendButton }}}
         </form>
     </main>
 </div>

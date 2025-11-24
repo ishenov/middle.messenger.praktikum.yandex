@@ -1,38 +1,34 @@
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 
-import template from "./template";
-import Handlebars from "handlebars";
-
-interface ButtonProps extends Record<string, unknown> {
+export interface ButtonProps extends Props {
   id?: string;
   class?: string;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   text: string;
-  events: {
-    click(e: Event): void;
-  }
+  // onClick убран, так как он не будет работать с текущим рендер-движком
 }
 
-export default class Button extends Component<ButtonProps> {
+export class Button extends Component {
   constructor(props: ButtonProps) {
-    super("button", {
-      ...props,
-      events: {
-        click: (e: Event) => {
-            e.preventDefault()
-            e.stopPropagation()
-          console.log(props.onClick)
-          if (props.onClick) {
-            props.events.click(e);
-          }
-        },
-      },
-    });
+    // Просто создаем тег <button> с переданными props.
+    // События будут обрабатываться родительским компонентом.
+    super('button', props);
   }
 
-  render() {
-    const compiled = Handlebars.compile(template);
-    return compiled(this.props);
+  render(): string {
+    const { id, class: className, type, text } = this.props as ButtonProps;
+
+    if (id) {
+      this.element!.id = id;
+    }
+    this.element!.className = `button ${className || ''}`.trim();
+
+    if (type) {
+      (this.element! as HTMLButtonElement).type = type;
+    }
+
+    // Возвращаем только текст кнопки
+    return text || '';
   }
 }

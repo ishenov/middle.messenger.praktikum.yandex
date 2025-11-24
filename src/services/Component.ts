@@ -4,8 +4,19 @@ interface ComponentMeta<Props extends Record<string, unknown> = Record<string, u
   tagName: string;
   props: Props;
 }
+export type TEvent = (e:Event)=>void;
+type Events = {
+  [key: string | symbol]:TEvent;
+};
+type Parent = Component | undefined;
 
-export default abstract class Component<Props extends Record<string, unknown> = Record<string, unknown>> {
+export type Props = {
+  events?: Events,
+  parent?: Parent,
+  [key: string | symbol]: any,
+};
+
+export default abstract class Component {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
