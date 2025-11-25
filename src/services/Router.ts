@@ -1,5 +1,4 @@
 import { Route } from './Route';
-// import Component from './Component';
 
 export class Router {
   private static __instance: Router;

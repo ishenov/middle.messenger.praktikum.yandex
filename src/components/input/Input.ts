@@ -1,4 +1,5 @@
 import Component, { Props } from "../../services/Component";
+import Handlebars from "handlebars";
 
 interface InputProps extends Props {
     id?: string;
@@ -11,14 +12,25 @@ interface InputProps extends Props {
     disabled?: boolean;
 }
 
-const template = `<input id="{{id}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input {{class}}" name="{{name}}" {{#if required}}required{{/if}} {{#if disabled}}disabled{{/if}}>`;
+const template = `<input
+  id="{{id}}"
+  type="{{type}}"
+  placeholder="{{placeholder}}"
+  {{#if value}}value="{{value}}"{{/if}}
+  class="input {{class}}"
+  name="{{name}}"
+  {{#if required}}required{{/if}}
+  {{#if disabled}}disabled{{/if}}
+>`;
 
 export default class Input extends Component {
     constructor(props: InputProps) {
-        super("input", props);
+        // The 'div' tag is a placeholder, as it will be replaced by the template.
+        super("div", props);
     }
 
-    render() {
-        return template;
+    render(): string {
+        const compiled = Handlebars.compile(template);
+        return compiled(this.props);
     }
 }

@@ -5,15 +5,17 @@ interface RouteProps {
   rootQuery: string;
 }
 
+type ComponentFactory = () => Component;
+
 export class Route {
   private _pathname: string;
-  private _blockClass: typeof Component;
+  private _blockFactory: ComponentFactory | typeof Component;
   private _block: Component | null;
   private _props: RouteProps;
 
-  constructor(pathname: string, view: typeof Component, props: RouteProps) {
+  constructor(pathname: string, view: ComponentFactory | typeof Component, props: RouteProps) {
     this._pathname = pathname;
-    this._blockClass = view;
+    this._blockFactory = view;
     this._block = null;
     this._props = props;
   }
@@ -38,7 +40,14 @@ export class Route {
   render(): void {
     if (!this._block) {
       // @ts-ignore
-      this._block = new this._blockClass();
+      if (this._blockFactory.prototype instanceof Component) {
+        // It's a class
+        // @ts-ignore
+        this._block = new this._blockFactory();
+      } else {
+        // It's a factory function
+        this._block = (this._blockFactory as ComponentFactory)();
+      }
       render(this._props.rootQuery, this._block);
       return;
     }
