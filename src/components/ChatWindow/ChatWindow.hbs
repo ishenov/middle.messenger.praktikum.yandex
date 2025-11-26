@@ -1,23 +1,30 @@
-<div class="chat-header">
-    <div class="chat-user">
-        <div class="avatar small"></div>
-        <div class="username">{{selectedChat.name}}</div>
-    </div>
-    <div class="chat-menu">⋮</div>
-</div>
-
-<div class="chat-body">
-    <div class="chat-date">19 июня</div>
-
-    <div class="message incoming">
-        <div class="bubble">
-            Привет! Смотри, тут всплыл интересный кусок лунной космической истории...
-        </div>
-        <div class="meta">11:56</div>
+<main class="chat-window">
+    <div class="chat-header">
+        {{#if selectedChat}}
+            <div class="chat-user">
+                <div class="avatar small"></div>
+                <div class="username">{{selectedChat.title}}</div>
+            </div>
+            <div class="chat-menu">⋮</div>
+        {{/if}}
     </div>
 
-    <div class="message outgoing">
-        <div class="bubble">Круто!</div>
-        <div class="meta">✔✔ 12:00</div>
+    <div class="chat-body">
+        {{#each messages}}
+            <div class="message {{#if (eq this.user_id ../user.id)}}outgoing{{else}}incoming{{/if}}">
+                <div class="bubble">
+                    {{this.content}}
+                </div>
+                <div class="meta">{{this.time}}</div>
+            </div>
+        {{/each}}
     </div>
-</div>
+
+    {{#if selectedChat}}
+        <form id="message-form" class="chat-input">
+            {{{ fileButton }}}
+            {{{ messageInput }}}
+            {{{ sendButton }}}
+        </form>
+    {{/if}}
+</main>

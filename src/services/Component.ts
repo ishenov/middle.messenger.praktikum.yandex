@@ -97,11 +97,13 @@ export default abstract class Component {
   }
 
   setProps = (nextProps: Partial<Props>): void => {
-    if (Object.keys(nextProps).length === 0) {
+    if (!nextProps || Object.keys(nextProps).length === 0) {
       return;
     }
 
+    const oldProps = { ...this.props };
     Object.assign(this.props, nextProps);
+    this.eventBus().emit(Component.EVENTS.FLOW_CDU, oldProps, this.props);
   };
 
   get element(): HTMLElement | null {
@@ -126,8 +128,6 @@ export default abstract class Component {
   }
 
   private _makePropsProxy(props: Props): Props {
-    const self = this;
-
     return new Proxy(props, {
       get(target: Props, prop: string): unknown {
         const value = target[prop as keyof Props];
@@ -135,8 +135,6 @@ export default abstract class Component {
       },
       set(target: Props, prop: string, value: unknown): boolean {
         (target as Record<string, unknown>)[prop] = value;
-
-        self.eventBus().emit(Component.EVENTS.FLOW_CDU, {...target}, target);
         return true;
       },
       deleteProperty(): never {

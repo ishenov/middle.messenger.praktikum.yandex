@@ -6,7 +6,6 @@ import { Button } from '../../components/button/Button';
 import Input from '../../components/input/Input';
 import Router from '../../services/Router';
 import { ChatWindow } from '../../components/ChatWindow';
-import ValidatedInput from '../../components/validated-input/ValidatedInput';
 import WSService from '../../services/WSService';
 
 export default class ChatPage extends Component {
@@ -14,6 +13,7 @@ export default class ChatPage extends Component {
   private searchValue: string = '';
   private currentChatId: number | null = null;
   private sockets: Map<number, WSService> = new Map();
+  private chatMessages: Map<number, any[]> = new Map();
 
   constructor(props: Record<string, unknown> = {}) {
     const searchInput = new Input({
@@ -24,10 +24,7 @@ export default class ChatPage extends Component {
     });
     const profileLinkButton = new Button({ id: 'profile-link', text: 'Профиль >', class: 'profile-link', type: 'button' });
     const addChatButton = new Button({ id: 'add-chat', text: '+', class: 'add-chat', type: 'button' });
-    const chatWindow = new ChatWindow();
-    const fileButton = new Button({ id: 'file-button', text: '📎', class: 'file-button', type: 'button' });
-    const messageInput = new ValidatedInput({ id: 'message', type: 'text', placeholder: 'Сообщение', fieldName: 'message' });
-    const sendButton = new Button({ id: 'send-button', text: '➤', class: 'send-button', type: 'submit' });
+    const chatWindow = new ChatWindow({ user: props.user });
 
     super("div", {
       ...props,
@@ -35,26 +32,28 @@ export default class ChatPage extends Component {
       profileLinkButton,
       addChatButton,
       chatWindow,
-      fileButton,
-      messageInput,
-      sendButton,
       events: {
         click: (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.closest('#profile-link')) this.handleProfileLinkClick();
-          if (target.closest('#file-button')) this.handleFileButtonClick();
           if (target.closest('#add-chat')) this.createChat();
 
           const chatItem = target.closest('.chat-item');
           if (chatItem) {
             this.handleChatItemClick(chatItem as HTMLElement);
           }
-        },
-        submit: (e: Event) => {
-          e.preventDefault();
-          const form = e.target as HTMLFormElement;
-          if (form.id === 'message-form') {
-            this.handleSendMessage(form);
+
+          if (target.closest('#send-button')) {
+            e.preventDefault();
+            const form = target.closest('form');
+            if (form) {
+              const formData = new FormData(form);
+              const data = Object.fromEntries(formData.entries());
+              if (data.message) {
+                this.handleSendMessage(data.message as string);
+                form.reset();
+              }
+            }
           }
         },
         input: (e: Event) => {
@@ -72,18 +71,25 @@ export default class ChatPage extends Component {
   handleChatItemClick(chatItem: HTMLElement) {
     const chatId = chatItem.dataset.chatId;
     if (chatId) {
-      this.currentChatId = parseInt(chatId, 10);
-      console.log('currentChatId:', this.currentChatId);
+      this.currentChatId = parseInt(chatId);
+      const messages = this.chatMessages.get(this.currentChatId) || [];
+      const selectedChat = (this.props.chats as any[]).find(c => c.id === this.currentChatId);
+
+      // @ts-ignore
+      const chatWindow = this.props.chatWindow as ChatWindow;
+      chatWindow.setProps({
+        messages,
+        selectedChat,
+        user: this.props.user
+      });
+
+      this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
     }
   }
 
   handleProfileLinkClick() {
     const router = new Router('#app');
     router.go('/settings');
-  }
-
-  handleFileButtonClick() {
-    console.log('File button clicked');
   }
 
   createChat() {
@@ -94,43 +100,83 @@ export default class ChatPage extends Component {
     })
   }
 
-  handleSendMessage(form: HTMLFormElement) {
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    console.log('Sending message:', data);
-    form.reset(); // Очищаем форму
+  handleSendMessage(message: string) {
+    if (!this.currentChatId) {
+      console.error('No active chat.');
+      return;
+    }
+
+    const socket = this.sockets.get(this.currentChatId);
+    if (socket) {
+      socket.send({
+        content: message,
+        type: 'message',
+      });
+    } else {
+      console.error('Socket for chat not found.');
+    }
+  }
+
+  handleSocketMessage(chatId: number, data: any) {
+    const existingMessages = this.chatMessages.get(chatId) || [];
+    let newMessages: any[] = [];
+
+    if (Array.isArray(data)) {
+      // History is usually sent newest-first. We reverse it to be oldest-first.
+      newMessages = data.reverse();
+    } else if (typeof data === 'object' && data !== null && data.type === 'message') {
+      // A new live message. We append it to the end to maintain chronological order.
+      newMessages = [...existingMessages, data];
+    } else {
+      // If it's not an array or a message, do nothing.
+      newMessages = existingMessages;
+    }
+
+    if (newMessages.length > 0) {
+      this.chatMessages.set(chatId, newMessages);
+
+      if (this.currentChatId === chatId) {
+        // @ts-ignore
+        const chatWindow = this.props.chatWindow as ChatWindow;
+        chatWindow.setProps({ messages: newMessages, user: this.props.user });
+
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      }
+    }
   }
 
   getChatsList() {
     this.api.get('/chats').then(response => {
       this.setProps({
         chats: response.data,
-      });
-      this.openChatSockets(response.data);
+      })
+      this.openChatSockets(response.data)
     })
   }
 
   openChatSockets(chats: unknown) {
     const userId = (this.props.user as any)?.id;
-    console.log(userId)
     if (!userId) {
       console.error('User ID not found');
       return;
     }
 
     // @ts-ignore
-    chats.forEach((chat: { id: number; }) => {
+    chats.forEach(chat => {
       this.api.post(`/chats/token/${chat.id}`).then((response: any) => {
         const token = response.data.token;
         const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chat.id}/${token}`;
-        const socket = new WSService(url);
+        const socket = new WSService(url, (data) => this.handleSocketMessage(chat.id, data));
         this.sockets.set(chat.id, socket);
+        // Get old messages
+        socket.onOpen(() => {
+          socket.send({ content: '0', type: 'get old' });
+        });
       });
     });
   }
 
   componentDidMount() {
-    // I'll assume the user is already in the props. If not, you'll need to fetch it first.
     this.getChatsList()
     Object.values(this.props).forEach(prop => {
       if (prop instanceof Component) {
@@ -146,10 +192,7 @@ export default class ChatPage extends Component {
       searchInput: (this.props.searchInput as Input).render(),
       profileLinkButton: (this.props.profileLinkButton as Button).render(),
       chatWindow: (this.props.chatWindow as ChatWindow).render(),
-      fileButton: (this.props.fileButton as Button).render(),
       addChatButton: (this.props.addChatButton as Button).render(),
-      messageInput: (this.props.messageInput as ValidatedInput).render(),
-      sendButton: (this.props.sendButton as Button).render(),
     });
   }
 }

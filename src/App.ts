@@ -3,8 +3,7 @@ import Component from './services/Component.js';
 import { FormValidator } from './services/FormValidator.js';
 import Router from "./services/Router";
 import HTTPTransport from "./services/HTTPTransport";
-
-// ... (interfaces are unchanged)
+import { registerHelpers } from './services/helpers.js';
 
 export default class App extends Component {
     private state: any;
@@ -23,6 +22,8 @@ export default class App extends Component {
 
       this.router = new Router("#app");
       this.api = new HTTPTransport();
+
+      registerHelpers(); // Register Handlebars helpers
     }
 
     render(): string {
