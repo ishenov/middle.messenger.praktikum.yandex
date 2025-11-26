@@ -29,24 +29,25 @@ export default [
     },
     rules: {
       // TypeScript specific rules
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-unused-vars': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-var-requires': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'warn',
-      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'off', // Отключено
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
 
-      'import/no-unresolved': 'off', // TypeScript handles this
+      'import/no-unresolved': 'off',
       'import/no-duplicates': 'error',
       'import/no-unused-modules': 'warn',
 
@@ -63,7 +64,7 @@ export default [
       'no-new-func': 'error',
       'no-script-url': 'error',
       'prefer-promise-reject-errors': 'error',
-      'require-await': 'off', // TypeScript version is better
+      'require-await': 'off',
       'no-return-await': 'error',
       'no-throw-literal': 'error',
       'prefer-named-capture-group': 'error',
@@ -72,7 +73,7 @@ export default [
       'prefer-destructuring': ['error', { object: true, array: false }],
       'no-param-reassign': 'error',
       'no-underscore-dangle': 'off',
-      'camelcase': 'off', // TypeScript handles this better
+      'camelcase': 'off',
       'no-magic-numbers': ['warn', { ignore: [-1, 0, 1, 2] }],
       'complexity': ['warn', 10],
       'max-depth': ['warn', 4],

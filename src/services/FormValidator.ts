@@ -10,7 +10,7 @@ export interface FormField {
 export class FormValidator extends Component {
   private formElement: HTMLFormElement;
   private validationResults: Record<string, ValidationResult> = {};
-  private onSubmitCallback?: (formData: Record<string, string>) => void; // eslint-disable-line no-unused-vars
+  private onSubmitCallback?: (formData: Record<string, string>) => void;  
 
   constructor(formElement: HTMLFormElement, onSubmitCallback?: () => void) {
     super('div', {});

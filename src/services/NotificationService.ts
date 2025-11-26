@@ -16,7 +16,7 @@ class NotificationService {
     if (notificationElement) {
       this.container?.appendChild(notificationElement);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         notificationElement.remove();
       }, duration);
     }

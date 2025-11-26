@@ -45,7 +45,7 @@ export default class WSService {
 
   private clearPing() {
     if (this.pingInterval) {
-      clearInterval(this.pingInterval);
+      window.clearInterval(this.pingInterval);
       this.pingInterval = undefined;
     }
   }

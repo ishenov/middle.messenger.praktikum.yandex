@@ -91,7 +91,7 @@ export default abstract class Component {
   }
 
 
-  // eslint-disable-next-line no-unused-vars
+   
   componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
     return true;
   }
