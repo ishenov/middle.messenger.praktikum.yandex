@@ -12,7 +12,7 @@ export interface ButtonProps extends Props {
 
 export class Button extends Component {
   constructor(props: ButtonProps) {
-    super('button', props);
+    super('div', props);
   }
 
   render(): string {

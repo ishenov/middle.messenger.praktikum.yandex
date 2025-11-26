@@ -68,11 +68,9 @@ class HTTPTransport {
       const xhr = this.createXHR();
       const { method, headers = {}, data, timeout = 5000 } = options;
 
-      // Set timeout
       xhr.timeout = timeout;
       xhr.withCredentials = true;
 
-      // Set up event handlers
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status >= 200 && xhr.status < 300) {
@@ -109,23 +107,21 @@ class HTTPTransport {
         reject(new Error('Request timeout'));
       };
 
-      // Open connection
       xhr.open(method, url, true);
 
-      // Set headers
       Object.entries(headers).forEach(([key, value]) => {
         xhr.setRequestHeader(key, value);
       });
 
-      // Set default content type for non-GET requests with data
-      if (method !== 'GET' && data && !headers['Content-Type']) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
-      }
-
-      // Send request
-      if (data && method !== 'GET') {
-        const body = typeof data === 'string' ? data : JSON.stringify(data);
-        xhr.send(body);
+      if (method !== 'GET' && data) {
+        if (data instanceof FormData) {
+          xhr.send(data);
+        } else {
+          if (!headers['Content-Type']) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+          }
+          xhr.send(JSON.stringify(data));
+        }
       } else {
         xhr.send();
       }

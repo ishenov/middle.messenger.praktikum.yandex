@@ -3,18 +3,22 @@ import Component from "../../services/Component";
 import template from './ChangePassword.hbs?raw';
 import { Button } from '../../components/button/Button';
 import ValidatedInput from '../../components/validated-input/ValidatedInput';
+import Input from '../../components/input/Input';
 import Router from '../../services/Router';
+import UserAPI from '../../api/UserAPI';
+import NotificationService from '../../services/NotificationService';
 
 export default class ChangePasswordPage extends Component {
+  private userApi: UserAPI;
+
   constructor(props: Record<string, unknown> = {}) {
-    const oldPasswordInput = new ValidatedInput({ id: "oldPassword", type: "password", value: "", fieldName: "password" });
-    const newPasswordInput = new ValidatedInput({ id: "newPassword", type: "password", value: "", fieldName: "password" });
+    const oldPasswordInput = new Input({ id: "oldPassword", name: "oldPassword", type: "password", value: "" });
+    const newPasswordInput = new ValidatedInput({ id: "newPassword", name: "newPassword", type: "password", value: "", fieldName: "password" });
 
     const saveButton = new Button({ text: "Сохранить", class: "edit-link secondary", type: "submit" });
 
-    super("div", {
+    super("form", {
       ...props,
-      firstName: 'Иван',
       oldPasswordInput,
       newPasswordInput,
       saveButton,
@@ -25,10 +29,12 @@ export default class ChangePasswordPage extends Component {
         },
         submit: (e: Event) => {
             e.preventDefault();
-            this.handleSave();
+            this.handleSave(e.currentTarget as HTMLFormElement);
         }
       },
     });
+
+    this.userApi = new UserAPI();
   }
 
   handleBack() {
@@ -36,19 +42,31 @@ export default class ChangePasswordPage extends Component {
     router.back();
   }
 
-  handleSave() {
-    // Тут будет логика сохранения пароля
-    console.log('Password saved');
-    this.handleBack();
+  async handleSave(form: HTMLFormElement) {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+    console.log(data)
+    try {
+      await this.userApi.changePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.password
+      });
+      NotificationService.show('Password changed successfully', 'success');
+      this.handleBack();
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'An unknown error occurred';
+      NotificationService.show(errorMessage, 'error');
+      console.error('Error changing password:', error);
+    }
   }
 
   render(): string {
     const compiled = Handlebars.compile(template);
     const props = {
       ...this.props,
-      oldPasswordInput: this.props.oldPasswordInput.getContent()?.outerHTML,
-      newPasswordInput: this.props.newPasswordInput.getContent()?.outerHTML,
-      saveButton: this.props.saveButton.getContent()?.outerHTML,
+      oldPasswordInput: (this.props.oldPasswordInput as Input).getContent()?.outerHTML,
+      newPasswordInput: (this.props.newPasswordInput as ValidatedInput).getContent()?.outerHTML,
+      saveButton: (this.props.saveButton as Button).getContent()?.outerHTML,
     };
     return compiled(props);
   }

@@ -3,7 +3,7 @@
         <div class="header">
             {{{ profileLinkButton }}}
         </div>
-        <div>
+        <div class="add-chat-block">
             {{{ searchInput }}}
             {{{ addChatButton }}}
         </div>
@@ -19,7 +19,8 @@
                     {{#if unread_count}}
                         <div class="unread-count">{{unread_count}}</div>
                     {{/if}}
-                    <div class="chat-time">{{last_message.time}}</div>
+                    <div class="chat-time">{{formatTime last_message.time}}</div>
+                    <button class="delete-chat-button" data-chat-id="{{id}}">X</button>
                 </li>
             {{/each}}
         </ul>

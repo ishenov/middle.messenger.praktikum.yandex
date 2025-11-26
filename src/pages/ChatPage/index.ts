@@ -7,9 +7,11 @@ import Input from '../../components/input/Input';
 import Router from '../../services/Router';
 import { ChatWindow } from '../../components/ChatWindow';
 import WSService from '../../services/WSService';
+import ChatAPI from '../../api/ChatAPI';
 
 export default class ChatPage extends Component {
   private api: HTTPTransport;
+  private chatApi: ChatAPI;
   private searchValue: string = '';
   private currentChatId: number | null = null;
   private sockets: Map<number, WSService> = new Map();
@@ -39,8 +41,15 @@ export default class ChatPage extends Component {
           if (target.closest('#add-chat')) this.createChat();
 
           const chatItem = target.closest('.chat-item');
-          if (chatItem) {
+          if (chatItem && !target.closest('.delete-chat-button')) {
             this.handleChatItemClick(chatItem as HTMLElement);
+          }
+
+          if (target.closest('.delete-chat-button')) {
+            const chatId = target.dataset.chatId;
+            if (chatId) {
+              this.handleDeleteChat(parseInt(chatId, 10));
+            }
           }
 
           if (target.closest('#send-button')) {
@@ -66,25 +75,21 @@ export default class ChatPage extends Component {
     });
 
     this.api = new HTTPTransport();
+    this.chatApi = new ChatAPI();
   }
 
   handleChatItemClick(chatItem: HTMLElement) {
-    const chatId = chatItem.dataset.chatId;
-    if (chatId) {
-      this.currentChatId = parseInt(chatId);
-      const messages = this.chatMessages.get(this.currentChatId) || [];
-      const selectedChat = (this.props.chats as any[]).find(c => c.id === this.currentChatId);
+    this.currentChatId = parseInt(chatItem.dataset.chatId!);
+    const messages = this.chatMessages.get(this.currentChatId) || [];
+    const selectedChat = (this.props.chats as any[]).find(c => c.id === this.currentChatId);
 
-      // @ts-ignore
-      const chatWindow = this.props.chatWindow as ChatWindow;
-      chatWindow.setProps({
-        messages,
-        selectedChat,
-        user: this.props.user
-      });
+    (this.props.chatWindow as ChatWindow).setProps({
+      messages,
+      selectedChat,
+      user: this.props.user
+    });
 
-      this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
-    }
+    this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
   }
 
   handleProfileLinkClick() {
@@ -98,6 +103,18 @@ export default class ChatPage extends Component {
     }).then(() => {
       this.getChatsList()
     })
+  }
+
+  handleDeleteChat(chatId: number) {
+    this.chatApi.deleteChat(chatId).then(() => {
+      this.getChatsList();
+      if (this.currentChatId === chatId) {
+        this.currentChatId = null;
+        (this.props.chatWindow as ChatWindow).setProps({ selectedChat: null, messages: [] });
+      }
+    }).catch(error => {
+      console.error('Error deleting chat:', error);
+    });
   }
 
   handleSendMessage(message: string) {
@@ -122,13 +139,10 @@ export default class ChatPage extends Component {
     let newMessages: any[] = [];
 
     if (Array.isArray(data)) {
-      // History is usually sent newest-first. We reverse it to be oldest-first.
       newMessages = data.reverse();
     } else if (typeof data === 'object' && data !== null && data.type === 'message') {
-      // A new live message. We append it to the end to maintain chronological order.
       newMessages = [...existingMessages, data];
     } else {
-      // If it's not an array or a message, do nothing.
       newMessages = existingMessages;
     }
 
@@ -136,10 +150,7 @@ export default class ChatPage extends Component {
       this.chatMessages.set(chatId, newMessages);
 
       if (this.currentChatId === chatId) {
-        // @ts-ignore
-        const chatWindow = this.props.chatWindow as ChatWindow;
-        chatWindow.setProps({ messages: newMessages, user: this.props.user });
-
+        (this.props.chatWindow as ChatWindow).setProps({ messages: newMessages, user: this.props.user });
         this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
       }
     }
@@ -161,17 +172,12 @@ export default class ChatPage extends Component {
       return;
     }
 
-    // @ts-ignore
-    chats.forEach(chat => {
+    (chats as any[]).forEach(chat => {
       this.api.post(`/chats/token/${chat.id}`).then((response: any) => {
         const token = response.data.token;
         const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chat.id}/${token}`;
         const socket = new WSService(url, (data) => this.handleSocketMessage(chat.id, data));
         this.sockets.set(chat.id, socket);
-        // Get old messages
-        socket.onOpen(() => {
-          socket.send({ content: '0', type: 'get old' });
-        });
       });
     });
   }

@@ -13,7 +13,7 @@ const template = `<a href="{{href}}" class="{{class}}" data-page="{{data-page}}"
 
 export default class Link extends Component {
     constructor(props: LinkProps) {
-        super("a", props);
+        super("div", props);
     }
 
     render() {

@@ -5,7 +5,7 @@
 
     <form id="profile-form" class="profile-container">
         <div class="profile-avatar">
-            <div class="avatar large"></div>
+            {{{ avatarComponent }}}
         </div>
         <div class="profile-name">{{firstName}}</div>
 
@@ -16,7 +16,7 @@
                     {{#if isEdit}}
                         {{{ emailInput }}}
                     {{else}}
-                        {{email}}
+                        {{user.email}}
                     {{/if}}
                 </div>
             </div>
@@ -27,7 +27,7 @@
                     {{#if isEdit}}
                         {{{ loginInput }}}
                     {{else}}
-                        {{login}}
+                        {{user.login}}
                     {{/if}}
                 </div>
             </div>
@@ -38,7 +38,7 @@
                     {{#if isEdit}}
                         {{{ firstNameInput }}}
                     {{else}}
-                        {{firstName}}
+                        {{user.first_name}}
                     {{/if}}
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     {{#if isEdit}}
                         {{{ secondNameInput }}}
                     {{else}}
-                        {{secondName}}
+                        {{user.second_name}}
                     {{/if}}
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     {{#if isEdit}}
                         {{{ displayNameInput }}}
                     {{else}}
-                        {{displayName}}
+                        {{user.display_name}}
                     {{/if}}
                 </div>
             </div>
@@ -71,7 +71,7 @@
                     {{#if isEdit}}
                         {{{ phoneInput }}}
                     {{else}}
-                        {{phone}}
+                        {{user.phone}}
                     {{/if}}
                 </div>
             </div>

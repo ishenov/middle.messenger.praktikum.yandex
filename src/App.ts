@@ -4,6 +4,7 @@ import { FormValidator } from './services/FormValidator.js';
 import Router from "./services/Router";
 import HTTPTransport from "./services/HTTPTransport";
 import { registerHelpers } from './services/helpers.js';
+import {ProfileData} from "./pages/ProfilePage";
 
 export default class App extends Component {
     private state: any;
@@ -35,9 +36,8 @@ export default class App extends Component {
         const response = await this.api.get('/auth/user');
         this.user = response.data;
       } catch (error) {
-        // User is not authenticated, redirect to login
+        // User is not authenticated, redirect to log in
         this.router.go('/sign-in');
-        return;
       }
 
 
@@ -45,9 +45,9 @@ export default class App extends Component {
         .use("/", () => new ChatPage({ user: this.user }))
         .use("/sign-in", LoginPage)
         .use("/sign-up", RegistrationPage)
-        .use("/settings", () => new ProfilePage({ user: this.user }))
+        .use("/settings", () => new ProfilePage({ user: this.user as ProfileData }))
         .use("/messenger", () => new ChatPage({ user: this.user }))
-        .use("/change-password", ChangePasswordPage)
+        .use("/change-password", () => new ChangePasswordPage({ user: this.user }))
         .use("/404", NotFoundPage)
         .use("/500", ServerErrorPage)
         .start();

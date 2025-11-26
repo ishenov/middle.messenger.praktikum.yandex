@@ -1,54 +1,62 @@
 import Handlebars from 'handlebars';
-import Component, { Props } from '../../services/Component';
+import Component from '../../services/Component';
 import template from './Modal.hbs?raw';
-import './modal.css';
+import UserAPI from '../../api/UserAPI';
+import { UserDTO } from '../../api/type';
 
-interface ModalProps extends Props {
-  isOpen?: boolean;
-  title?: string;
-  content?: string | Component;
-  onClose?: () => void;
+interface AddUserModalProps {
+  chatId: number;
 }
 
-export default class Modal extends Component {
-  constructor(props: ModalProps) {
+export default class AddUserModal extends Component {
+  private userApi: UserAPI;
+
+  constructor(props: AddUserModalProps) {
     super('div', {
       ...props,
+      users: [],
       events: {
-        click: (e: Event) => {
-          const target = e.target as HTMLElement;
-          if (target.classList.contains('modal-overlay') || target.closest('.modal-close-btn')) {
-            this.handleClose();
-          }
-        },
-      },
+        'input #user-search-input': (e: Event) => this.searchUsers((e.target as HTMLInputElement).value),
+        'click #close-modal-button': () => this.hide(),
+        'click #user-search-results li': (e: Event) => this.addUserToChat(Number((e.currentTarget as HTMLLIElement).dataset.userId))
+      }
     });
-  }
-
-  handleClose() {
-    if (this.props.onClose) {
-      (this.props.onClose as () => void)();
-    } else {
-      this.hide();
-    }
+    this.userApi = new UserAPI();
+    this.element?.classList.add('modal-overlay');
   }
 
   show() {
-    this.setProps({ isOpen: true });
-    this.element!.style.display = 'flex';
+    this.element?.classList.add('visible');
   }
 
   hide() {
-    this.setProps({ isOpen: false });
-    this.element!.style.display = 'none';
+    this.element?.classList.remove('visible');
+  }
+
+  async searchUsers(login: string) {
+    if (login.length > 2) {
+      try {
+        const response = await this.userApi.searchUser({ login });
+        this.setProps({ users: response.data });
+      } catch (error) {
+        console.error('Error searching users:', error);
+      }
+    }
+  }
+
+  addUserToChat(userId: number) {
+    this.eventBus().emit('addUserToChat', { userId, chatId: this.props.chatId });
+    this.hide();
   }
 
   render(): string {
     const compiled = Handlebars.compile(template);
-    const content = this.props.content instanceof Component
-      ? this.props.content.getContent()?.outerHTML
-      : this.props.content;
-
-    return compiled({ ...this.props, content });
+    const props = {
+      ...this.props,
+      users: (this.props.users as UserDTO[]).map(user => `
+        <li data-user-id="${user.id}">${user.login}</li>
+      `).join('')
+    };
+    return compiled(props);
   }
 }
