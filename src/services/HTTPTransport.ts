@@ -19,7 +19,7 @@ class HTTPTransport {
   private router: Router = new Router('#app');
 
   constructor(baseURL: string = '') {
-    this.baseURL = 'https://ya-praktikum.tech/api/v2' + baseURL;
+    this.baseURL = `https://ya-praktikum.tech/api/v2${  baseURL}`;
   }
 
   private createXHR(): XMLHttpRequest {

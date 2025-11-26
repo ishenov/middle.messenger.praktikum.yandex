@@ -46,7 +46,7 @@ export default class ChatPage extends Component {
           }
 
           if (target.closest('.delete-chat-button')) {
-            const chatId = target.dataset.chatId;
+            const {chatId} = target.dataset;
             if (chatId) {
               this.handleDeleteChat(parseInt(chatId, 10));
             }
@@ -174,7 +174,7 @@ export default class ChatPage extends Component {
 
     (chats as any[]).forEach(chat => {
       this.api.post(`/chats/token/${chat.id}`).then((response: any) => {
-        const token = response.data.token;
+        const {token} = response.data;
         const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chat.id}/${token}`;
         const socket = new WSService(url, (data) => this.handleSocketMessage(chat.id, data));
         this.sockets.set(chat.id, socket);
