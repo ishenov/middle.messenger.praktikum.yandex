@@ -1,4 +1,8 @@
 import { Route } from './Route';
+import Component from './Component';
+
+type ComponentFactory = () => Component;
+type ConcreteComponentConstructor = new (...args: any[]) => Component;
 
 export class Router {
   private static __instance: Router;
@@ -21,7 +25,7 @@ export class Router {
     Router.__instance = this;
   }
 
-  use(pathname: string, block: any): this {
+  use(pathname: string, block: ComponentFactory | ConcreteComponentConstructor): this {
     const route = new Route(pathname, block, { rootQuery: this._rootQuery });
     this.routes.push(route);
     return this;

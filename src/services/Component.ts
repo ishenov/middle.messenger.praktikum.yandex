@@ -54,9 +54,7 @@ export default abstract class Component {
   private _addEvents() {
     const {events = {}} = this.props;
 
-    // @ts-ignore
     Object.keys(events).forEach(eventName => {
-      // @ts-ignore
       this._element?.addEventListener(eventName, events[eventName]);
     });
   }
@@ -91,7 +89,7 @@ export default abstract class Component {
   }
 
 
-   
+
   componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
     return true;
   }
