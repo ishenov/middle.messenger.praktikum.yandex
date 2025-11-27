@@ -21,12 +21,20 @@ export default class ChatPage extends Component {
     const searchInput = new Input({
       id: 'search',
       type: 'text',
-      placeholder: 'Поиск',
+      placeholder: 'Введите название нового чата',
       class: 'search',
     });
     const profileLinkButton = new Button({ id: 'profile-link', text: 'Профиль >', class: 'profile-link', type: 'button' });
-    const addChatButton = new Button({ id: 'add-chat', text: '+', class: 'add-chat', type: 'button' });
-    const chatWindow = new ChatWindow({ user: props.user });
+    const addChatButton = new Button({ id: 'add-chat', text: 'Создать', class: 'add-chat', type: 'button' });
+
+    // Создаем chatWindow, передавая ему функцию для закрытия модального окна
+    const chatWindow = new ChatWindow({
+      user: props.user,
+      onCloseAddUserModal: () => {
+        console.log('ChatPage: onCloseAddUserModal callback received. Emitting FLOW_RENDER.'); // Добавлено для отладки
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      }
+    });
 
     super("div", {
       ...props,
@@ -39,6 +47,14 @@ export default class ChatPage extends Component {
           const target = e.target as HTMLElement;
           if (target.closest('#profile-link')) this.handleProfileLinkClick();
           if (target.closest('#add-chat')) this.createChat();
+
+          // Добавляем обработку клика для addUserButton
+          if (target.closest('#add-user-button')) {
+            const chatWindowComponent = (this.props.chatWindow as ChatWindow);
+            chatWindowComponent.addUserModal.open();
+            // Принудительно перерисовываем ChatPage, чтобы обновить HTML ChatWindow и открыть модальное окно
+            this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+          }
 
           const chatItem = target.closest('.chat-item');
           if (chatItem && !target.closest('.delete-chat-button')) {

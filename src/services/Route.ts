@@ -6,7 +6,7 @@ interface RouteProps {
 }
 
 type ComponentFactory = () => Component;
-type ConcreteComponentConstructor = new (...args: any[]) => Component; // A constructor that returns a Component instance
+type ConcreteComponentConstructor = new (...args: any[]) => Component;
 
 // User-defined type guard to check if a value is a concrete component constructor
 function isComponentConstructor(view: ComponentFactory | ConcreteComponentConstructor): view is ConcreteComponentConstructor {
@@ -53,10 +53,9 @@ export class Route {
         // It's a factory function
         this._block = this._blockFactory();
       }
-      render(this._props.rootQuery, this._block);
-      return;
     }
-
-    this._block.show();
+    // Always re-render the block into the root query to ensure DOM is updated with latest HTML
+    render(this._props.rootQuery, this._block as Component);
+    this._block?.show();
   }
 }

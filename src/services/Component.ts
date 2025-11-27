@@ -111,6 +111,7 @@ export default abstract class Component {
   private _render(): void {
     const block = this.render();
     if (this._element && block) {
+      this.removeAllEventListeners();
       this._element.innerHTML = block;
     }
 

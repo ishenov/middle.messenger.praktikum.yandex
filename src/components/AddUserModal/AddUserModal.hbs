@@ -1,0 +1,22 @@
+<div class="modal-overlay {{#if isOpen}}modal-overlay_open{{/if}}">
+    <div class="modal-content">
+        <h2>Добавить пользователя в чат</h2>
+        <div class="modal-body">
+          <form id="search-form" class="search-form">
+            {{{ searchInput }}}
+            {{{ searchButton }}}
+          </form>
+            <div class="search-results">
+                {{#each searchResults}}
+                    <div class="user-item">
+                        <span>{{this.login}}</span>
+                        <button data-user-id="{{this.id}}" class="add-user-to-chat-button">Добавить</button>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+        <div class="modal-footer">
+            {{{ closeButton }}}
+        </div>
+    </div>
+</div>
