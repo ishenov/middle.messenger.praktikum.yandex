@@ -294,13 +294,13 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1000; /* Убедитесь, что модалка поверх всего */
+  display: none; /* Скрываем по умолчанию */
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-  display: none; /* Скрываем по умолчанию */
+  background-color: rgb(0 0 0 / 50%); /* Полупрозрачный фон */
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Убедитесь, что модалка поверх всего */
 }
 
 .modal-overlay_open {
@@ -308,10 +308,10 @@ body {
 }
 
 .modal-content {
-  background-color: white;
+  width: 90%;
+  max-width: 500px;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  width: 90%;
+  background-color: white;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }

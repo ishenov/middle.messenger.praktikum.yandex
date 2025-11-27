@@ -71,14 +71,14 @@ export default class ChatPage extends Component {
           }
 
           if (target.closest('.add-user-to-chat-button')) {
-            const userId = (target as HTMLElement).dataset.userId;
+            const {userId} = (target as HTMLElement).dataset;
             if (userId) {
               this.handleAddUserToChat(parseInt(userId, 10));
             }
           }
 
           if (target.closest('.remove-user-from-chat-button')) {
-            const userId = (target as HTMLElement).dataset.userId;
+            const {userId} = (target as HTMLElement).dataset;
             if (userId) {
               this.handleRemoveUserFromChat(parseInt(userId, 10));
             }
