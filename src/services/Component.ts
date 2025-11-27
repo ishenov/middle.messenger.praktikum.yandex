@@ -26,7 +26,7 @@ export default abstract class Component {
 
   private _element: HTMLElement | null = null;
   private _meta: ComponentMeta<Props> | null = null;
-  protected props: Props;
+  props: Props;
   protected eventBus: () => EventBus;
   private _eventListeners: Array<{ element: HTMLElement; event: string; handler: EventListener }> = [];
 

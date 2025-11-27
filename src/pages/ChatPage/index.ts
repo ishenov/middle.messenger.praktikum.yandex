@@ -27,11 +27,9 @@ export default class ChatPage extends Component {
     const profileLinkButton = new Button({ id: 'profile-link', text: 'Профиль >', class: 'profile-link', type: 'button' });
     const addChatButton = new Button({ id: 'add-chat', text: 'Создать', class: 'add-chat', type: 'button' });
 
-    // Создаем chatWindow, передавая ему функцию для закрытия модального окна
     const chatWindow = new ChatWindow({
       user: props.user,
       onCloseAddUserModal: () => {
-        console.log('ChatPage: onCloseAddUserModal callback received. Emitting FLOW_RENDER.'); // Добавлено для отладки
         this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
       }
     });
@@ -48,12 +46,42 @@ export default class ChatPage extends Component {
           if (target.closest('#profile-link')) this.handleProfileLinkClick();
           if (target.closest('#add-chat')) this.createChat();
 
-          // Добавляем обработку клика для addUserButton
           if (target.closest('#add-user-button')) {
-            const chatWindowComponent = (this.props.chatWindow as ChatWindow);
-            chatWindowComponent.addUserModal.open();
-            // Принудительно перерисовываем ChatPage, чтобы обновить HTML ChatWindow и открыть модальное окно
-            this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+            if (!this.currentChatId) {
+              console.error('No chat selected');
+              return;
+            }
+            this.api.get(`/chats/${this.currentChatId}/users`)
+              .then((response: any) => {
+                const users = response.data;
+                const chatWindowComponent = (this.props.chatWindow as ChatWindow);
+                chatWindowComponent.addUserModal.setProps({ currentChatUsers: users, searchResults: [] });
+                chatWindowComponent.addUserModal.open();
+                this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+              })
+              .catch(error => console.error('Failed to fetch chat users:', error));
+          }
+
+          if (target.closest('#user-search-button')) {
+            e.preventDefault();
+            const input = this.element?.querySelector('#user-search-login') as HTMLInputElement;
+            if (input && input.value) {
+              this.handleUserSearch(input.value);
+            }
+          }
+
+          if (target.closest('.add-user-to-chat-button')) {
+            const userId = (target as HTMLElement).dataset.userId;
+            if (userId) {
+              this.handleAddUserToChat(parseInt(userId, 10));
+            }
+          }
+
+          if (target.closest('.remove-user-from-chat-button')) {
+            const userId = (target as HTMLElement).dataset.userId;
+            if (userId) {
+              this.handleRemoveUserFromChat(parseInt(userId, 10));
+            }
           }
 
           const chatItem = target.closest('.chat-item');
@@ -86,12 +114,75 @@ export default class ChatPage extends Component {
             if (target.id === 'search') {
                 this.searchValue = target.value;
             }
+        },
+        keydown: (e: KeyboardEvent) => {
+            const target = e.target as HTMLElement;
+            if (e.key === 'Enter' && target.matches('#user-search-login')) {
+                e.preventDefault();
+                const input = target as HTMLInputElement;
+                if (input.value) {
+                    this.handleUserSearch(input.value);
+                }
+            }
         }
       },
     });
 
     this.api = new HTTPTransport();
     this.chatApi = new ChatAPI();
+  }
+
+  private handleRemoveUserFromChat(userId: number) {
+    if (!this.currentChatId) {
+      console.error('No chat selected to remove a user from.');
+      return;
+    }
+    this.api.delete('/chats/users', { users: [userId], chatId: this.currentChatId })
+      .then(() => {
+        // After successful removal, re-fetch the list of users to update the modal
+        return this.api.get(`/chats/${this.currentChatId}/users`);
+      })
+      .then((response: any) => {
+        const users = response.data;
+        const chatWindow = this.props.chatWindow as ChatWindow;
+        chatWindow.addUserModal.setProps({ currentChatUsers: users });
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      })
+      .catch(error => {
+        console.error('Error removing user from chat:', error);
+      });
+  }
+
+  private handleAddUserToChat(userId: number) {
+    if (!this.currentChatId) {
+      console.error('No chat selected to add a user to.');
+      return;
+    }
+    this.api.put('/chats/users', { users: [userId], chatId: this.currentChatId })
+      .then(() => {
+        const chatWindow = this.props.chatWindow as ChatWindow;
+        chatWindow.addUserModal.close();
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      })
+      .catch(error => {
+        console.error('Error adding user to chat:', error);
+      });
+  }
+
+  private handleUserSearch(login: string) {
+    this.api.post('/user/search', { login })
+      .then((response: any) => {
+        const users = response.data;
+        const chatWindow = this.props.chatWindow as ChatWindow;
+        chatWindow.addUserModal.setProps({ searchResults: users });
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      })
+      .catch(error => {
+        console.error('Error searching users:', error);
+        const chatWindow = this.props.chatWindow as ChatWindow;
+        chatWindow.addUserModal.setProps({ searchResults: [] });
+        this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+      });
   }
 
   handleChatItemClick(chatItem: HTMLElement) {

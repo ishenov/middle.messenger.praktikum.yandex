@@ -14,36 +14,11 @@ export class ChatWindow extends Component {
 
     const addUserModal = new AddUserModal({
       isOpen: false,
-      onSearch: async (login: string) => {
-        try {
-          const response = await fetch('https://ya-praktikum.tech/api/v2/user/search', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ login }),
-          });
-          if (response.ok) {
-            const users = await response.json();
-            this.addUserModal.setProps({ searchResults: users });
-          } else {
-            console.error('Failed to search users:', response.statusText);
-            this.addUserModal.setProps({ searchResults: [] });
-          }
-        } catch (error) {
-          console.error('Error searching users:', error);
-          this.addUserModal.setProps({ searchResults: [] });
-        }
-      },
-      onAddUserToChat: (userId: number) => {
-        console.log(`Adding user ${userId} to chat ${this.props.selectedChat?.id}`);
-        this.addUserModal.close();
-      }
     });
 
     const addUserButton = new Button({
       id: 'add-user-button',
-      text: 'Добавить пользователя в чат',
+      text: 'Добавить/Удалить пользователя',
       class: 'add-user-button',
       type: 'button',
     });

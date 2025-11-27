@@ -4,9 +4,19 @@ import template from "./AddUserModal.hbs?raw";
 import ValidatedInput from "../validated-input/ValidatedInput";
 import {Button} from "../button/Button";
 
+interface User {
+    id: number;
+    first_name: string;
+    second_name: string;
+    display_name: string | null;
+    login: string;
+    avatar: string | null;
+}
+
 interface AddUserModalProps extends Props {
     isOpen?: boolean;
-    searchResults?: any[]; // To store search results
+    searchResults?: User[]; // To store search results
+    currentChatUsers?: User[]; // To store users already in the chat
     onSearch?: (login: string) => void;
     onClose?: () => void;
     onAddUserToChat?: (userId: number) => void;
@@ -20,16 +30,13 @@ export class AddUserModal extends Component {
             placeholder: 'Логин пользователя',
             fieldName: 'login',
         });
+
         const searchButton = new Button({
             id: 'user-search-button',
             text: 'Найти',
             type: 'submit',
-          events: {
-            click: event => {
-              console.log(event);
-            },
-          },
         });
+
         const closeButton = new Button({
             id: 'close-add-user-modal',
             text: 'Закрыть',
@@ -41,6 +48,7 @@ export class AddUserModal extends Component {
             ...props,
             isOpen: props.isOpen || false,
             searchResults: props.searchResults || [],
+            currentChatUsers: props.currentChatUsers || [], // Initialize new prop
             searchInput,
             searchButton,
             closeButton,
@@ -48,11 +56,13 @@ export class AddUserModal extends Component {
     }
 
     public open() {
-        this.setProps({ isOpen: true });
+        // Clear search results when opening, but keep current chat users
+        this.setProps({ isOpen: true, searchResults: [] });
     }
 
     public close() {
-        this.setProps({ isOpen: false, searchResults: [] }); // Clear results on close
+        // Clear both when closing
+        this.setProps({ isOpen: false, searchResults: [], currentChatUsers: [] });
         if (this.props.onClose) {
             (this.props.onClose as Function)();
         }
