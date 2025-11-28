@@ -5,6 +5,7 @@ import Router from "./services/Router";
 import HTTPTransport from "./services/HTTPTransport";
 import { registerHelpers } from './services/helpers.js';
 import {ProfileData} from "./pages/ProfilePage";
+import AuthApi from "./api/auth";
 
 export default class App extends Component {
     private state: any;
@@ -12,6 +13,7 @@ export default class App extends Component {
     private api: HTTPTransport;
     private router: Router;
     public user: unknown;
+    private authApi: AuthApi;
 
     constructor() {
         const currentPage = window.location.pathname.split('/').pop() ?? '';
@@ -23,6 +25,7 @@ export default class App extends Component {
 
       this.router = new Router("#app");
       this.api = new HTTPTransport();
+      this.authApi = new AuthApi();
 
       registerHelpers(); // Register Handlebars helpers
     }
@@ -33,10 +36,9 @@ export default class App extends Component {
 
     async componentDidMount() {
       try {
-        const response = await this.api.get('/auth/user');
+        const response = await this.authApi.me();
         this.user = response.data;
       } catch (error) {
-        // User is not authenticated, redirect to log in
         this.router.go('/sign-in');
       }
 

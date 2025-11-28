@@ -62,6 +62,14 @@ export default class ChatPage extends Component {
               .catch(error => console.error('Failed to fetch chat users:', error));
           }
 
+          if (target.closest('#close-add-user-modal')) {
+            e.preventDefault();
+            const chatWindowComponent = (this.props.chatWindow as ChatWindow);
+            chatWindowComponent.addUserModal.setProps({ currentChatUsers: [], searchResults: [] });
+            chatWindowComponent.addUserModal.close();
+            this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
+          }
+
           if (target.closest('#user-search-button')) {
             e.preventDefault();
             const input = this.element?.querySelector('#user-search-login') as HTMLInputElement;
@@ -114,6 +122,20 @@ export default class ChatPage extends Component {
             if (target.id === 'search') {
                 this.searchValue = target.value;
             }
+        },
+        submit: (e: Event) => {
+          const target = e.target as HTMLFormElement;
+          e.preventDefault();
+
+          if (target.id === 'message-form') {
+            const formData = new FormData(target);
+            const data = Object.fromEntries(formData.entries());
+
+            if (data.message) {
+              this.handleSendMessage(data.message as string);
+              target.focus();
+            }
+          }
         },
         keydown: (e: KeyboardEvent) => {
             const target = e.target as HTMLElement;

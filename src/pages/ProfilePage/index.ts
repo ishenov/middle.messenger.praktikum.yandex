@@ -30,7 +30,7 @@ export default class ProfilePage extends Component {
     const firstNameInput = new ValidatedInput({ id: "first_name", class: "profile-input", type: "text", value: props.user?.first_name, fieldName: "first_name" });
     const secondNameInput = new ValidatedInput({ id: "second_name", class: "profile-input", type: "text", value: props.user?.second_name, fieldName: "second_name" });
     const displayNameInput = new Input({ id: "display_name", class: "profile-input", type: "text", value: props.user?.display_name, name: "display_name" });
-    const phoneInput = new ValidatedInput({ id: "phone", class: "profile-input", type: "tel", value: props.user?.phone, fieldName: "phone" });
+    const phoneInput = new ValidatedInput({ id: "phone", class: "profile-input", type: "number", value: props.user?.phone, fieldName: "phone" });
     const saveButton = new Button({ id: "save-button", text: "Сохранить", class: "edit-link secondary", type: "submit" });
     const editDataButton = new Button({ id: "edit-data-button", text: "Изменить данные", class: "edit-link secondary", type: "button" });
     const changePasswordButton = new Button({ id: "change-password-button", text: "Изменить пароль", class: "edit-link secondary", type: "button" });
@@ -113,6 +113,10 @@ export default class ProfilePage extends Component {
     try {
       await this.userApi.saveProfile(data);
       this.toggleEditMode(false);
+      const response = await this.authApi.me();
+      this.props.user = response.data;
+      this.setProps({ user: response.data });
+
     } catch (error) {
       console.error('Error saving profile data:', error);
     }

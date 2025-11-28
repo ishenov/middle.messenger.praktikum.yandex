@@ -24,12 +24,16 @@ export default class WSService {
     });
 
     this.socket.addEventListener('message', event => {
-      const data = JSON.parse(event.data);
+      try {
+        const data = JSON.parse(event.data);
 
-      if (data.type === 'pong') {
-        return; // Handled by ping/pong mechanism
+        if (data.type === 'pong') {
+          return;
+        }
+        this.onMessage(data);
+      } catch (error) {
+        console.error('Ошибка обработки сообщения:', error);
       }
-      this.onMessage(data);
     });
 
     this.socket.addEventListener('error', event => {

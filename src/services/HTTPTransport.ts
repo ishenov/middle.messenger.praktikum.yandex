@@ -1,4 +1,5 @@
 import Router from "./Router";
+import NotificationService from "./NotificationService";
 
 export interface HTTPTransportOptions {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -7,12 +8,28 @@ export interface HTTPTransportOptions {
   timeout?: number;
 }
 
-export interface HTTPTransportResponse<T = unknown> {
+export interface HTTPTransportResponse<T> {
   status: number;
   statusText: string;
   data: T;
   headers: Record<string, string>;
 }
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HTTPResponse<T> = Promise<HTTPTransportResponse<T>>;
+type HTTPMethodFunction = <T>(...args: RequestWithDataArgs) => HTTPResponse<T>;
+type HTTPGetFunction = <T>(...args: RequestWithParamsArgs) => HTTPResponse<T>;
+
+type RequestWithDataArgs = [
+  url: string,
+  data?: unknown,
+  options?: Partial<HTTPTransportOptions>
+];
+
+type RequestWithParamsArgs = [
+  url: string,
+  queryParams?: Record<string, string>,
+  options?: Partial<HTTPTransportOptions>
+];
 
 class HTTPTransport {
   private baseURL: string;
@@ -60,7 +77,7 @@ class HTTPTransport {
     return urlObj.toString();
   }
 
-  private request<T = unknown>(
+  private request<T>(
     url: string,
     options: HTTPTransportOptions
   ): Promise<HTTPTransportResponse<T>> {
@@ -94,6 +111,8 @@ class HTTPTransport {
             if (xhr.status === 401) {
               this.router.go('/sign-in');
             }
+            const error = JSON.parse(xhr.responseText);
+            NotificationService.show(error.reason, 'error')
             reject(new Error(`HTTP Error ${xhr.status}: ${xhr.statusText}`));
           }
         }
@@ -128,52 +147,29 @@ class HTTPTransport {
     });
   }
 
-  public get<T>(
-    url: string,
-    queryParams?: Record<string, string>,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url, queryParams);
-    return this.request<T>(fullURL, {
-      method: 'GET',
-      ...options,
-    });
+  public get: HTTPGetFunction = (...args) => {
+    return this.makeRequest('GET', ...args);
   }
 
-  public post<T>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'POST',
-      data,
-      ...options,
-    });
+  public post: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('POST', ...args);
   }
 
-  public put<T>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'PUT',
-      data,
-      ...options,
-    });
+  public put: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('PUT', ...args);
   }
 
-  public delete<T>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'DELETE',
+  public delete: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('DELETE', ...args);
+  }
+
+  private makeRequest<T>(
+    method: HTTPMethod,
+    ...args: RequestWithDataArgs
+  ): HTTPResponse<T> {
+    const [url, data, options = {}] = args;
+    return this.request<T>(this.buildURL(url), {
+      method,
       data,
       ...options,
     });

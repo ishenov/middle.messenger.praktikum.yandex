@@ -12,7 +12,7 @@ export default class UserAPI {
     return userAPI.put<ProfileData>('/profile/avatar', data);
   }
 
-  changePassword(data: { oldPassword: unknown; newPassword: unknown; }) {
+  changePassword(data: { oldPassword: string; newPassword: string; }) {
     return userAPI.put('/password', data);
   }
 }
