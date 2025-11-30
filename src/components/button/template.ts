@@ -1,5 +1,9 @@
-export default `<button id="{{id}}" class="button {{class}}" 
-{{#if type}}type="{{type}}"{{else}}type="button"{{/if}}
-{{#if disabled}}
-  disabled
-{{/if}}>{{text}}</button>`;
+export default `
+<button
+        class="button button__{{ type }} {{#if class}}{{ class }}{{/if}}"
+        {{#if id}}id="{{ id }}" {{/if}}
+        {{#if type}}type="{{ type }}" {{/if}}
+        {{#if page}}page="{{ page }}" {{/if}}
+        {{#if name}}name="{{name}}"{{/if}}>
+    {{ text }}
+</button>`;

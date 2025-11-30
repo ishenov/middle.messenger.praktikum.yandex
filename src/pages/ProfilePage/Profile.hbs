@@ -5,7 +5,7 @@
 
     <form id="profile-form" class="profile-container">
         <div class="profile-avatar">
-            <div class="avatar large"></div>
+            {{{ avatarComponent }}}
         </div>
         <div class="profile-name">{{firstName}}</div>
 
@@ -14,9 +14,9 @@
                 <div class="label">Почта</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> ValidatedInput id="email" class="profile-input" type="email" value="{{email}}" fieldName="email"}}
+                        {{{ emailInput }}}
                     {{else}}
-                        {{email}}
+                        {{user.email}}
                     {{/if}}
                 </div>
             </div>
@@ -25,9 +25,9 @@
                 <div class="label">Логин</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> ValidatedInput id="login" class="profile-input" type="text" value="{{login}}" fieldName="login"}}
+                        {{{ loginInput }}}
                     {{else}}
-                        {{login}}
+                        {{user.login}}
                     {{/if}}
                 </div>
             </div>
@@ -36,9 +36,9 @@
                 <div class="label">Имя</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> ValidatedInput id="first_name" class="profile-input" type="text" value="{{firstName}}" fieldName="first_name"}}
+                        {{{ firstNameInput }}}
                     {{else}}
-                        {{firstName}}
+                        {{user.first_name}}
                     {{/if}}
                 </div>
             </div>
@@ -47,9 +47,9 @@
                 <div class="label">Фамилия</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> ValidatedInput id="second_name" class="profile-input" type="text" value="{{secondName}}" fieldName="second_name"}}
+                        {{{ secondNameInput }}}
                     {{else}}
-                        {{secondName}}
+                        {{user.second_name}}
                     {{/if}}
                 </div>
             </div>
@@ -58,9 +58,9 @@
                 <div class="label">Имя в чате</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> Input id="display_name" class="profile-input" type="text" value="{{displayName}}"}}
+                        {{{ displayNameInput }}}
                     {{else}}
-                        {{displayName}}
+                        {{user.display_name}}
                     {{/if}}
                 </div>
             </div>
@@ -69,9 +69,9 @@
                 <div class="label">Телефон</div>
                 <div class="value">
                     {{#if isEdit}}
-                        {{> ValidatedInput id="phone" class="profile-input" type="tel" value="{{phone}}" fieldName="phone"}}
+                        {{{ phoneInput }}}
                     {{else}}
-                        {{phone}}
+                        {{user.phone}}
                     {{/if}}
                 </div>
             </div>
@@ -79,14 +79,13 @@
 
         <div class="profile-actions">
             {{#if isEdit}}
-                {{> Button text="Сохранить" class="edit-link secondary" type="submit"}}
+                {{{ saveButton }}}
             {{else}}
-                {{> Button text="Изменить данные" class="edit-link secondary" type="button"}}
+                {{{ editDataButton }}}
             {{/if}}
 
-            {{> Button text="Изменить пароль" class="edit-link secondary" type="button"}}
-            {{> Button  text="Выйти" class="logout-link secondary" type="button"}}
+            {{{ changePasswordButton }}}
+            {{{ logoutButton }}}
         </div>
     </form>
 </div>
-{{> Footer}}

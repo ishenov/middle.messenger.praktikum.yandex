@@ -4,8 +4,19 @@ interface ComponentMeta<Props extends Record<string, unknown> = Record<string, u
   tagName: string;
   props: Props;
 }
+export type TEvent = (e:Event)=>void;
+type Events = {
+  [key: string | symbol]:TEvent;
+};
+type Parent = Component | undefined;
 
-export default abstract class Block<Props extends Record<string, unknown> = Record<string, unknown>> {
+export type Props = {
+  events?: Events,
+  parent?: Parent,
+  [key: string | symbol]: any,
+};
+
+export default abstract class Component {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
@@ -15,7 +26,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
 
   private _element: HTMLElement | null = null;
   private _meta: ComponentMeta<Props> | null = null;
-  protected props: Props;
+  props: Props;
   protected eventBus: () => EventBus;
   private _eventListeners: Array<{ element: HTMLElement; event: string; handler: EventListener }> = [];
 
@@ -30,14 +41,22 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
     this.eventBus = () => eventBus;
 
     this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+    eventBus.emit(Component.EVENTS.INIT);
   }
 
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Component.EVENTS.INIT, this.init.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
+    eventBus.on(Component.EVENTS.FLOW_RENDER, this._render.bind(this));
+  }
+
+  private _addEvents() {
+    const {events = {}} = this.props;
+
+    Object.keys(events).forEach(eventName => {
+      this._element?.addEventListener(eventName, events[eventName]);
+    });
   }
 
   private _createResources(): void {
@@ -48,7 +67,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
 
   init(): void {
     this._createResources();
-    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus().emit(Component.EVENTS.FLOW_RENDER);
   }
 
   private _componentDidMount(): void {
@@ -58,7 +77,7 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   componentDidMount(): void {}
 
   dispatchComponentDidMount(): void {
-    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
+    this.eventBus().emit(Component.EVENTS.FLOW_CDM);
   }
 
   private _componentDidUpdate(oldProps: Props, newProps: Props): void {
@@ -69,18 +88,20 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
     this._render();
   }
 
-   
-  // eslint-disable-next-line no-unused-vars
+
+
   componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
     return true;
   }
 
   setProps = (nextProps: Partial<Props>): void => {
-    if (Object.keys(nextProps).length === 0) {
+    if (!nextProps || Object.keys(nextProps).length === 0) {
       return;
     }
 
+    const oldProps = { ...this.props };
     Object.assign(this.props, nextProps);
+    this.eventBus().emit(Component.EVENTS.FLOW_CDU, oldProps, this.props);
   };
 
   get element(): HTMLElement | null {
@@ -90,8 +111,11 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   private _render(): void {
     const block = this.render();
     if (this._element && block) {
+      this.removeAllEventListeners();
       this._element.innerHTML = block;
     }
+
+    this._addEvents();
   }
 
   render(): string {
@@ -103,8 +127,6 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   }
 
   private _makePropsProxy(props: Props): Props {
-    const self = this;
-
     return new Proxy(props, {
       get(target: Props, prop: string): unknown {
         const value = target[prop as keyof Props];
@@ -112,8 +134,6 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
       },
       set(target: Props, prop: string, value: unknown): boolean {
         (target as Record<string, unknown>)[prop] = value;
-        
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, {...target}, target);
         return true;
       },
       deleteProperty(): never {
@@ -163,14 +183,14 @@ export default abstract class Block<Props extends Record<string, unknown> = Reco
   // Метод для делегирования событий
   protected delegateEventListener(selector: string, event: string, handler: EventListener): void {
     if (!this._element) return;
-    
+
     const delegatedHandler = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.matches(selector)) {
         handler(e);
       }
     };
-    
+
     this.addEventListener(this._element, event, delegatedHandler);
   }
 

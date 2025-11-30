@@ -1,0 +1,31 @@
+<main class="chat-window">
+    <div class="chat-header">
+        {{#if selectedChat}}
+            <div class="chat-user">
+                <div class="avatar small"></div>
+                <div class="username">{{selectedChat.title}}</div>
+            </div>
+            {{{ addUserButton }}}
+        {{/if}}
+    </div>
+
+    <div class="chat-body">
+        {{#each messages}}
+            <div class="message {{#if (eq this.user_id ../user.id)}}outgoing{{else}}incoming{{/if}}">
+                <div class="bubble">
+                    {{this.content}}
+                </div>
+                <div class="meta">{{formatTime this.time}}</div>
+            </div>
+        {{/each}}
+    </div>
+
+    {{#if selectedChat}}
+        <form id="message-form" class="chat-input">
+            {{{ messageInput }}}
+            {{{ sendButton }}}
+        </form>
+    {{/if}}
+
+    {{{ addUserModal }}}
+</main>

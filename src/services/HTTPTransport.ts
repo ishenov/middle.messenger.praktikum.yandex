@@ -1,3 +1,6 @@
+import Router from "./Router";
+import NotificationService from "./NotificationService";
+
 export interface HTTPTransportOptions {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: Record<string, string>;
@@ -5,18 +8,35 @@ export interface HTTPTransportOptions {
   timeout?: number;
 }
 
-export interface HTTPTransportResponse<T = unknown> {
+export interface HTTPTransportResponse<T> {
   status: number;
   statusText: string;
   data: T;
   headers: Record<string, string>;
 }
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HTTPResponse<T> = Promise<HTTPTransportResponse<T>>;
+type HTTPMethodFunction = <T>(...args: RequestWithDataArgs) => HTTPResponse<T>;
+type HTTPGetFunction = <T>(...args: RequestWithParamsArgs) => HTTPResponse<T>;
 
-export class HTTPTransport {
+type RequestWithDataArgs = [
+  url: string,
+  data?: unknown,
+  options?: Partial<HTTPTransportOptions>
+];
+
+type RequestWithParamsArgs = [
+  url: string,
+  queryParams?: Record<string, string>,
+  options?: Partial<HTTPTransportOptions>
+];
+
+class HTTPTransport {
   private baseURL: string;
+  private router: Router = new Router('#app');
 
   constructor(baseURL: string = '') {
-    this.baseURL = baseURL;
+    this.baseURL = `https://ya-praktikum.tech/api/v2${  baseURL}`;
   }
 
   private createXHR(): XMLHttpRequest {
@@ -26,7 +46,7 @@ export class HTTPTransport {
   private parseHeaders(headersString: string): Record<string, string> {
     const headers: Record<string, string> = {};
     const lines = headersString.trim().split('\n');
-    
+
     lines.forEach((line) => {
       const index = line.indexOf(':');
       if (index > 0) {
@@ -35,29 +55,29 @@ export class HTTPTransport {
         headers[key] = value;
       }
     });
-    
+
     return headers;
   }
 
   private buildURL(url: string, queryParams?: Record<string, string>): string {
     const fullURL = this.baseURL + url;
-    
+
     if (!queryParams || Object.keys(queryParams).length === 0) {
       return fullURL;
     }
 
     const urlObj = new URL(fullURL, window.location.origin);
-    
+
     Object.entries(queryParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         urlObj.searchParams.append(key, String(value));
       }
     });
-    
+
     return urlObj.toString();
   }
 
-  private request<T = unknown>(
+  private request<T>(
     url: string,
     options: HTTPTransportOptions
   ): Promise<HTTPTransportResponse<T>> {
@@ -65,15 +85,14 @@ export class HTTPTransport {
       const xhr = this.createXHR();
       const { method, headers = {}, data, timeout = 5000 } = options;
 
-      // Set timeout
       xhr.timeout = timeout;
+      xhr.withCredentials = true;
 
-      // Set up event handlers
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status >= 200 && xhr.status < 300) {
             let responseData: T;
-            
+
             try {
               responseData = xhr.responseText ? JSON.parse(xhr.responseText) : null as T;
             } catch {
@@ -86,9 +105,14 @@ export class HTTPTransport {
               data: responseData,
               headers: this.parseHeaders(xhr.getAllResponseHeaders()),
             };
-            
+
             resolve(response);
           } else {
+            if (xhr.status === 401) {
+              this.router.go('/sign-in');
+            }
+            const error = JSON.parse(xhr.responseText);
+            NotificationService.show(error.reason, 'error')
             reject(new Error(`HTTP Error ${xhr.status}: ${xhr.statusText}`));
           }
         }
@@ -102,77 +126,54 @@ export class HTTPTransport {
         reject(new Error('Request timeout'));
       };
 
-      // Open connection
       xhr.open(method, url, true);
 
-      // Set headers
       Object.entries(headers).forEach(([key, value]) => {
         xhr.setRequestHeader(key, value);
       });
 
-      // Set default content type for non-GET requests with data
-      if (method !== 'GET' && data && !headers['Content-Type']) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
-      }
-
-      // Send request
-      if (data && method !== 'GET') {
-        const body = typeof data === 'string' ? data : JSON.stringify(data);
-        xhr.send(body);
+      if (method !== 'GET' && data) {
+        if (data instanceof FormData) {
+          xhr.send(data);
+        } else {
+          if (!headers['Content-Type']) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+          }
+          xhr.send(JSON.stringify(data));
+        }
       } else {
         xhr.send();
       }
     });
   }
 
-  public get<T = unknown>(
-    url: string,
-    queryParams?: Record<string, string>,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url, queryParams);
-    return this.request<T>(fullURL, {
-      method: 'GET',
-      ...options,
-    });
+  public get: HTTPGetFunction = (...args) => {
+    return this.makeRequest('GET', ...args);
   }
 
-  public post<T = unknown>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'POST',
-      data,
-      ...options,
-    });
+  public post: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('POST', ...args);
   }
 
-  public put<T = unknown>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'PUT',
-      data,
-      ...options,
-    });
+  public put: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('PUT', ...args);
   }
 
-  public delete<T = unknown>(
-    url: string,
-    data?: unknown,
-    options: Partial<HTTPTransportOptions> = {}
-  ): Promise<HTTPTransportResponse<T>> {
-    const fullURL = this.buildURL(url);
-    return this.request<T>(fullURL, {
-      method: 'DELETE',
+  public delete: HTTPMethodFunction = (...args) => {
+    return this.makeRequest('DELETE', ...args);
+  }
+
+  private makeRequest<T>(
+    method: HTTPMethod,
+    ...args: RequestWithDataArgs
+  ): HTTPResponse<T> {
+    const [url, data, options = {}] = args;
+    return this.request<T>(this.buildURL(url), {
+      method,
       data,
       ...options,
     });
   }
 }
+
+export default HTTPTransport;

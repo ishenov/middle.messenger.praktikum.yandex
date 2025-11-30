@@ -1,1 +1,0 @@
-export default `<input id="{{id}}" type="{{type}}" placeholder="{{placeholder}}" value="{{value}}" class="input {{class}}" name="{{name}}" {{#if required}}required{{/if}} {{#if disabled}}disabled{{/if}}>`;

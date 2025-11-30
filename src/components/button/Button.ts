@@ -1,22 +1,22 @@
-import Component from "../../services/Component";
-
+import Component, { Props } from "../../services/Component";
+import Handlebars from "handlebars";
 import template from "./template";
 
-interface ButtonProps extends Record<string, unknown> {
-    id?: string;
-    class?: string;
-    type?: 'button' | 'submit' | 'reset';
-    disabled?: boolean;
-    text: string;
+export interface ButtonProps extends Props {
+  id?: string;
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  text: string;
 }
 
-export default class Button extends Component<ButtonProps> {
-    constructor(props: ButtonProps) {
-        // Создаём враппер DOM-элемент button
-        super("button", props);
-    }
+export class Button extends Component {
+  constructor(props: ButtonProps) {
+    super('div', props);
+  }
 
-    render() {
-        return template;
-    }
+  render(): string {
+    const compiled = Handlebars.compile(template);
+    return compiled(this.props);
+  }
 }
