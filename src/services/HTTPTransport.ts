@@ -145,30 +145,34 @@ class HTTPTransport {
     });
   }
 
-  public get(...args: RequestWithParamsArgs) {
-    return this.makeRequest('GET', ...args);
+  public get<T>(...args: RequestWithParamsArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('GET', ...args);
   }
 
-  public post(...args: RequestWithDataArgs) {
-    return this.makeRequest('POST', ...args);
+  public post<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('POST', ...args);
   }
 
-  public put(...args: RequestWithDataArgs) {
-    return this.makeRequest('PUT', ...args);
+  public put<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('PUT', ...args);
   }
 
-  public delete(...args: RequestWithDataArgs) {
-    return this.makeRequest('DELETE', ...args);
+  public delete<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('DELETE', ...args);
   }
 
   private makeRequest<T>(
     method: HTTPMethod,
-    ...args: RequestWithDataArgs
+    ...args: RequestWithDataArgs | RequestWithParamsArgs
   ): HTTPResponse<T> {
     const [url, data, options = {}] = args;
-    return this.request<T>(this.buildURL(url), {
+    const finalURL = (method === 'GET' && typeof data === 'object' && data !== null)
+      ? this.buildURL(url, data as Record<string, string>)
+      : this.buildURL(url);
+
+    return this.request<T>(finalURL, {
       method,
-      data,
+      data: (method !== 'GET' ? data : undefined),
       ...options,
     });
   }
