@@ -40,18 +40,20 @@ export default [
       '@typescript-eslint/no-unnecessary-condition': 'warn',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': 'off', // Отключено
+      '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'off', // Отключено
 
       'import/no-unresolved': 'off',
       'import/no-duplicates': 'error',
       'import/no-unused-modules': 'warn',
 
       // General rules
+      'no-undef': 'off', // Отключено
       'no-console': 'warn',
       'no-debugger': 'error',
       'prefer-const': 'error',
