@@ -16,8 +16,6 @@ export interface HTTPTransportResponse<T> {
 }
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type HTTPResponse<T> = Promise<HTTPTransportResponse<T>>;
-type HTTPMethodFunction = <T>(...args: RequestWithDataArgs) => HTTPResponse<T>;
-type HTTPGetFunction = <T>(...args: RequestWithParamsArgs) => HTTPResponse<T>;
 
 type RequestWithDataArgs = [
   url: string,
@@ -147,19 +145,19 @@ class HTTPTransport {
     });
   }
 
-  public get: HTTPGetFunction = (...args) => {
+  public get(...args: RequestWithParamsArgs) {
     return this.makeRequest('GET', ...args);
   }
 
-  public post: HTTPMethodFunction = (...args) => {
+  public post(...args: RequestWithDataArgs) {
     return this.makeRequest('POST', ...args);
   }
 
-  public put: HTTPMethodFunction = (...args) => {
+  public put(...args: RequestWithDataArgs) {
     return this.makeRequest('PUT', ...args);
   }
 
-  public delete: HTTPMethodFunction = (...args) => {
+  public delete(...args: RequestWithDataArgs) {
     return this.makeRequest('DELETE', ...args);
   }
 

@@ -1,0 +1,6 @@
+{
+  "spec": "src/**/*.spec.ts",
+  "import": "tsx",
+  "require": "./mocha-setup.js",
+  "timeout": 5000
+}

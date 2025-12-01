@@ -32,9 +32,8 @@ export class Router {
   }
 
   start(): void {
-    window.onpopstate = ((event: PopStateEvent) => {
-      const target = event.currentTarget as Window;
-      this._onRoute(target.location.pathname);
+    window.onpopstate = (() => {
+      this._onRoute(window.location.pathname);
     }).bind(this);
 
     this._onRoute(window.location.pathname);
