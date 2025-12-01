@@ -46,14 +46,22 @@ export default [
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
-      '@typescript-eslint/ban-ts-comment': 'off', // Отключено
+      '@typescript-eslint/ban-ts-comment': [
+        'off',
+        {
+          'ts-expect-error': false,
+          'ts-ignore': false,
+          'ts-nocheck': false,
+          'ts-check': false,
+        },
+      ],
 
       'import/no-unresolved': 'off',
       'import/no-duplicates': 'error',
       'import/no-unused-modules': 'warn',
 
       // General rules
-      'no-undef': 'off', // Отключено
+      'no-undef': 'off',
       'no-console': 'warn',
       'no-debugger': 'error',
       'prefer-const': 'error',
