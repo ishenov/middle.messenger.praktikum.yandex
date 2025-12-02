@@ -6,7 +6,7 @@ import Component from './Component';
 
 class MockComponent extends Component {
   constructor() {
-    super('div');
+    super('div', {});
   }
 
   render() {
@@ -45,12 +45,12 @@ describe('Router', () => {
     router.start();
     router.go('/');
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       const mockComponent = document.getElementById('mock-component');
       expect(mockComponent).to.not.be.null;
       expect(mockComponent?.textContent).to.equal('Mock Component');
       done();
-    }, 0);
+    });
   });
 
   it('should return the correct route', () => {
