@@ -14,7 +14,7 @@ interface ValidatedInputProps extends Props {
     errorMessage?: string;
 }
 
-export default class ValidatedInput extends Component {
+export default class ValidatedInput extends Component<ValidatedInputProps> {
     constructor(props: ValidatedInputProps) {
         super("div", props);
     }

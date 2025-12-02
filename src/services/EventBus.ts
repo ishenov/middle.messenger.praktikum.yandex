@@ -1,6 +1,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Listener = (..._args: any[]) => void;
+type Listener = (..._args: unknown[]) => void;
 
 export class EventBus {
   private listeners: Record<string, Listener[]> = {};
@@ -27,7 +27,7 @@ export class EventBus {
     );
   }
 
-  emit(event: string, ...args: any[]): void {
+  emit(event: string, ...args: unknown[]): void {
     if (!this.listeners[event]) {
       throw new Error(`Нет события: ${event}`);
     }

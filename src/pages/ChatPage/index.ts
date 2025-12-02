@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 import template from './Chat.hbs?raw';
-import HTTPTransport from "../../services/HTTPTransport";
+import HTTPTransport, { HTTPTransportResponse } from "../../services/HTTPTransport";
 import { Button } from '../../components/button/Button';
 import Input from '../../components/input/Input';
 import Router from '../../services/Router';
@@ -9,15 +9,71 @@ import { ChatWindow } from '../../components/ChatWindow';
 import WSService from '../../services/WSService';
 import ChatAPI from '../../api/ChatAPI';
 
-export default class ChatPage extends Component {
+interface Chat {
+  id: number;
+  title: string;
+  avatar: string | null;
+  unread_count: number;
+  last_message: {
+    user: {
+      first_name: string;
+      second_name: string;
+      avatar: string;
+      email: string;
+      login: string;
+      phone: string;
+    };
+    time: string;
+    content: string;
+  } | null;
+}
+
+interface Message {
+  id: number;
+  user_id: number;
+  chat_id: number;
+  type: 'message' | 'file' | 'sticker';
+  time: string;
+  content: string;
+  is_read: boolean;
+  file: {
+    id: number;
+    user_id: number;
+    path: string;
+    filename: string;
+    content_type: string;
+    content_size: number;
+    upload_date: string;
+  } | null;
+}
+
+interface User {
+    id: number;
+    first_name: string;
+    second_name: string;
+    display_name: string | null;
+    login: string;
+    avatar: string | null;
+}
+
+interface ChatPageProps extends Props {
+  user?: unknown;
+  chats?: Chat[];
+  searchInput?: Input;
+  profileLinkButton?: Button;
+  addChatButton?: Button;
+  chatWindow?: ChatWindow;
+}
+
+export default class ChatPage extends Component<ChatPageProps> {
   private api: HTTPTransport;
   private chatApi: ChatAPI;
   private searchValue: string = '';
   private currentChatId: number | null = null;
   private sockets: Map<number, WSService> = new Map();
-  private chatMessages: Map<number, any[]> = new Map();
+  private chatMessages: Map<number, Message[]> = new Map();
 
-  constructor(props: Record<string, unknown> = {}) {
+  constructor(props: ChatPageProps = {}) {
     const searchInput = new Input({
       id: 'search',
       type: 'text',
@@ -51,8 +107,8 @@ export default class ChatPage extends Component {
               console.error('No chat selected');
               return;
             }
-            this.api.get(`/chats/${this.currentChatId}/users`)
-              .then((response: any) => {
+            this.api.get<User[]>(`/chats/${this.currentChatId}/users`)
+              .then((response: HTTPTransportResponse<User[]>) => {
                 const users = response.data;
                 const chatWindowComponent = (this.props.chatWindow as ChatWindow);
                 chatWindowComponent.addUserModal.setProps({ currentChatUsers: users, searchResults: [] });
@@ -162,9 +218,9 @@ export default class ChatPage extends Component {
     this.api.delete('/chats/users', { users: [userId], chatId: this.currentChatId })
       .then(() => {
         // After successful removal, re-fetch the list of users to update the modal
-        return this.api.get(`/chats/${this.currentChatId}/users`);
+        return this.api.get<User[]>(`/chats/${this.currentChatId}/users`);
       })
-      .then((response: any) => {
+      .then((response: HTTPTransportResponse<User[]>) => {
         const users = response.data;
         const chatWindow = this.props.chatWindow as ChatWindow;
         chatWindow.addUserModal.setProps({ currentChatUsers: users });
@@ -192,8 +248,8 @@ export default class ChatPage extends Component {
   }
 
   private handleUserSearch(login: string) {
-    this.api.post('/user/search', { login })
-      .then((response: any) => {
+    this.api.post<User[]>('/user/search', { login })
+      .then((response: HTTPTransportResponse<User[]>) => {
         const users = response.data;
         const chatWindow = this.props.chatWindow as ChatWindow;
         chatWindow.addUserModal.setProps({ searchResults: users });
@@ -210,7 +266,7 @@ export default class ChatPage extends Component {
   handleChatItemClick(chatItem: HTMLElement) {
     this.currentChatId = parseInt(chatItem.dataset.chatId!);
     const messages = this.chatMessages.get(this.currentChatId) || [];
-    const selectedChat = (this.props.chats as any[]).find(c => c.id === this.currentChatId);
+    const selectedChat = (this.props.chats as Chat[]).find(c => c.id === this.currentChatId);
 
     (this.props.chatWindow as ChatWindow).setProps({
       messages,
@@ -263,14 +319,14 @@ export default class ChatPage extends Component {
     }
   }
 
-  handleSocketMessage(chatId: number, data: any) {
+  handleSocketMessage(chatId: number, data: unknown) {
     const existingMessages = this.chatMessages.get(chatId) || [];
-    let newMessages: any[] = [];
+    let newMessages: Message[] = [];
 
     if (Array.isArray(data)) {
-      newMessages = data.reverse();
-    } else if (typeof data === 'object' && data !== null && data.type === 'message') {
-      newMessages = [...existingMessages, data];
+      newMessages = data.reverse() as Message[];
+    } else if (typeof data === 'object' && data !== null && 'type' in data && data.type === 'message') {
+      newMessages = [...existingMessages, data as Message];
     } else {
       newMessages = existingMessages;
     }
@@ -286,7 +342,7 @@ export default class ChatPage extends Component {
   }
 
   getChatsList() {
-    this.api.get('/chats').then(response => {
+    this.api.get<Chat[]>('/chats').then(response => {
       this.setProps({
         chats: response.data,
       })
@@ -295,20 +351,22 @@ export default class ChatPage extends Component {
   }
 
   openChatSockets(chats: unknown) {
-    const userId = (this.props.user as any)?.id;
+    const userId = (this.props.user as { id: number })?.id;
     if (!userId) {
       console.error('User ID not found');
       return;
     }
 
-    (chats as any[]).forEach(chat => {
-      this.api.post(`/chats/token/${chat.id}`).then((response: any) => {
-        const {token} = response.data;
-        const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chat.id}/${token}`;
-        const socket = new WSService(url, (data) => this.handleSocketMessage(chat.id, data));
-        this.sockets.set(chat.id, socket);
-      });
-    });
+    if (Array.isArray(chats)) {
+        (chats as Chat[]).forEach(chat => {
+            this.api.post<{ token: string }>(`/chats/token/${chat.id}`).then((response: HTTPTransportResponse<{ token: string }>) => {
+                const {token} = response.data;
+                const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chat.id}/${token}`;
+                const socket = new WSService(url, (data) => this.handleSocketMessage(chat.id, data));
+                this.sockets.set(chat.id, socket);
+            });
+        });
+    }
   }
 
   componentDidMount() {

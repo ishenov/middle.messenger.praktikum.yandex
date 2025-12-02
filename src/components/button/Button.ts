@@ -10,7 +10,7 @@ export interface ButtonProps extends Props {
   text: string;
 }
 
-export class Button extends Component {
+export class Button extends Component<ButtonProps> {
   constructor(props: ButtonProps) {
     super('div', props);
   }

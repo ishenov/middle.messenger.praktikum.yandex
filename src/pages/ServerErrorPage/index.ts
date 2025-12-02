@@ -1,11 +1,15 @@
 import Handlebars from 'handlebars';
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 import template from './ServerError.hbs?raw';
 import { Button } from '../../components/button/Button';
 import Router from '../../services/Router';
 
-export default class ServerErrorPage extends Component {
-  constructor(props: Record<string, unknown> = {}) {
+interface ServerErrorPageProps extends Props {
+  backButton?: Button;
+}
+
+export default class ServerErrorPage extends Component<ServerErrorPageProps> {
+  constructor(props: ServerErrorPageProps = {}) {
     const backButton = new Button({
       id: "back-button",
       text: "Вернуться назад",

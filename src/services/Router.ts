@@ -1,15 +1,15 @@
 import { Route } from './Route';
-import Component from './Component';
+import Component, { Props } from './Component';
 
-type ComponentFactory = () => Component;
-type ConcreteComponentConstructor = new (...args: any[]) => Component;
+type ComponentFactory<P extends Props> = () => Component<P>;
+type ConcreteComponentConstructor<P extends Props> = new (props: P) => Component<P>;
 
 export class Router {
   private static __instance: Router;
 
-  private routes: Route[] = [];
+  private routes: Route<any>[] = [];
   private history: History = window.history;
-  private _currentRoute: Route | null = null;
+  private _currentRoute: Route<any> | null = null;
   private _rootQuery: string;
 
   constructor(rootQuery: string) {
@@ -25,7 +25,7 @@ export class Router {
     Router.__instance = this;
   }
 
-  use(pathname: string, block: ComponentFactory | ConcreteComponentConstructor): this {
+  use<P extends Props>(pathname: string, block: ComponentFactory<P> | ConcreteComponentConstructor<P>): this {
     const route = new Route(pathname, block, { rootQuery: this._rootQuery });
     this.routes.push(route);
     return this;
@@ -66,7 +66,7 @@ export class Router {
     this.history.forward();
   }
 
-  getRoute(pathname: string): Route | undefined {
+  getRoute(pathname: string): Route<any> | undefined {
     return this.routes.find(route => route.match(pathname));
   }
 }
