@@ -1,9 +1,9 @@
 export default class WSService {
   private socket: WebSocket;
   private pingInterval: number | undefined;
-  private onMessage: (data: any) => void;
+  private onMessage: (data: unknown) => void;
 
-  constructor(url: string, onMessage: (data: any) => void) {
+  constructor(url: string, onMessage: (data: unknown) => void) {
     this.socket = new WebSocket(url);
     this.onMessage = onMessage;
 
@@ -58,7 +58,7 @@ export default class WSService {
     this.send({ type: 'get old', content: offset });
   }
 
-  public send(data: any) {
+  public send(data: unknown) {
     if (this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(data));
     }

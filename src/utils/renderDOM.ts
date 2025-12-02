@@ -1,7 +1,13 @@
-export function render(query: string, block: any) {
+import Component, { Props } from "../services/Component";
+
+export function render<P extends Props>(query: string, block: Component<P>) {
     const root = document.querySelector(query);
 
-    root?.appendChild(block.getContent());
+    const content = block.getContent();
+    if (content) {
+        root?.appendChild(content);
+    }
+
 
     block.dispatchComponentDidMount();
 

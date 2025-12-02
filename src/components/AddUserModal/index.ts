@@ -20,9 +20,12 @@ interface AddUserModalProps extends Props {
     onSearch?: (login: string) => void;
     onClose?: () => void;
     onAddUserToChat?: (userId: number) => void;
+    searchInput?: ValidatedInput;
+    searchButton?: Button;
+    closeButton?: Button;
 }
 
-export class AddUserModal extends Component {
+export class AddUserModal extends Component<AddUserModalProps> {
     constructor(props: AddUserModalProps) {
         const searchInput = new ValidatedInput({
             id: 'user-search-login',

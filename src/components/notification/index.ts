@@ -1,13 +1,13 @@
 import Handlebars from 'handlebars';
-import Component from '../../services/Component';
+import Component, { Props } from '../../services/Component';
 import template from './Notification.hbs?raw';
 
-interface NotificationProps {
+interface NotificationProps extends Props {
   message: string;
   type: 'success' | 'error' | 'info';
 }
 
-export default class Notification extends Component {
+export default class Notification extends Component<NotificationProps> {
   constructor(props: NotificationProps) {
     super('div', props);
   }

@@ -1,22 +1,22 @@
 import { EventBus } from './EventBus.js';
 
-interface ComponentMeta<Props extends Record<string, unknown> = Record<string, unknown>> {
+interface ComponentMeta<P extends Props> {
   tagName: string;
-  props: Props;
+  props: P;
 }
 export type TEvent = (e:Event)=>void;
 type Events = {
   [key: string | symbol]:TEvent;
 };
-type Parent = Component | undefined;
+type Parent = Component<Props> | undefined;
 
 export type Props = {
   events?: Events,
   parent?: Parent,
-  [key: string | symbol]: any,
+  [key: string | symbol]: unknown,
 };
 
-export default abstract class Component {
+export default abstract class Component<P extends Props> {
   static EVENTS = {
     INIT: "init",
     FLOW_CDM: "flow:component-did-mount",
@@ -25,12 +25,12 @@ export default abstract class Component {
   } as const;
 
   private _element: HTMLElement | null = null;
-  private _meta: ComponentMeta<Props> | null = null;
-  props: Props;
+  private _meta: ComponentMeta<P> | null = null;
+  props: P;
   protected eventBus: () => EventBus;
   private _eventListeners: Array<{ element: HTMLElement; event: string; handler: EventListener }> = [];
 
-  constructor(tagName: string = "div", props: Props = {} as Props) {
+  constructor(tagName: string = "div", props: P) {
     const eventBus = new EventBus();
     this._meta = {
       tagName,
@@ -55,7 +55,7 @@ export default abstract class Component {
     const {events = {}} = this.props;
 
     Object.keys(events).forEach(eventName => {
-      this._element?.addEventListener(eventName, events[eventName]);
+      this._element?.addEventListener(eventName, (events as Events)[eventName]);
     });
   }
 
@@ -80,7 +80,7 @@ export default abstract class Component {
     this.eventBus().emit(Component.EVENTS.FLOW_CDM);
   }
 
-  private _componentDidUpdate(oldProps: Props, newProps: Props): void {
+  private _componentDidUpdate(oldProps: P, newProps: P): void {
     const response = this.componentDidUpdate(oldProps, newProps);
     if (!response) {
       return;
@@ -90,11 +90,11 @@ export default abstract class Component {
 
 
 
-  componentDidUpdate(_oldProps: Props, _newProps: Props): boolean {
+  componentDidUpdate(_oldProps: P, _newProps: P): boolean {
     return true;
   }
 
-  setProps = (nextProps: Partial<Props>): void => {
+  setProps = (nextProps: Partial<P>): void => {
     if (!nextProps || Object.keys(nextProps).length === 0) {
       return;
     }
@@ -126,13 +126,13 @@ export default abstract class Component {
     return this.element;
   }
 
-  private _makePropsProxy(props: Props): Props {
+  private _makePropsProxy(props: P): P {
     return new Proxy(props, {
-      get(target: Props, prop: string): unknown {
-        const value = target[prop as keyof Props];
+      get(target: P, prop: string): unknown {
+        const value = target[prop as keyof P];
         return typeof value === "function" ? value.bind(target) : value;
       },
-      set(target: Props, prop: string, value: unknown): boolean {
+      set(target: P, prop: string, value: unknown): boolean {
         (target as Record<string, unknown>)[prop] = value;
         return true;
       },

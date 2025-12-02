@@ -1,11 +1,15 @@
 import Handlebars from 'handlebars';
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 import template from './NotFound.hbs?raw';
 import { Button } from '../../components/button/Button';
 import Router from '../../services/Router';
 
-export default class NotFoundPage extends Component {
-  constructor(props: Record<string, unknown> = {}) {
+interface NotFoundPageProps extends Props {
+  backButton?: Button;
+}
+
+export default class NotFoundPage extends Component<NotFoundPageProps> {
+  constructor(props: NotFoundPageProps = {}) {
     const backButton = new Button({
       id: "back-button",
       text: "Вернуться назад",

@@ -1,5 +1,5 @@
 import Handlebars from 'handlebars';
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 import template from './ChangePassword.hbs?raw';
 import { Button } from '../../components/button/Button';
 import ValidatedInput from '../../components/validated-input/ValidatedInput';
@@ -8,10 +8,16 @@ import Router from '../../services/Router';
 import UserAPI from '../../api/UserAPI';
 import NotificationService from '../../services/NotificationService';
 
-export default class ChangePasswordPage extends Component {
+interface ChangePasswordPageProps extends Props {
+  oldPasswordInput?: Input;
+  newPasswordInput?: ValidatedInput;
+  saveButton?: Button;
+}
+
+export default class ChangePasswordPage extends Component<ChangePasswordPageProps> {
   private userApi: UserAPI;
 
-  constructor(props: Record<string, unknown> = {}) {
+  constructor(props: ChangePasswordPageProps = {}) {
     const oldPasswordInput = new Input({ id: "oldPassword", name: "oldPassword", type: "password", value: "" });
     const newPasswordInput = new ValidatedInput({ id: "newPassword", name: "newPassword", type: "password", value: "", fieldName: "password" });
 

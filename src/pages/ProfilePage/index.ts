@@ -1,5 +1,5 @@
 import Handlebars from 'handlebars';
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 import template from './Profile.hbs?raw';
 import { Button } from '../../components/button/Button';
 import ValidatedInput from '../../components/validated-input/ValidatedInput';
@@ -11,20 +11,36 @@ import AuthApi from '../../api/auth';
 import NotificationService from '../../services/NotificationService';
 
 export type ProfileData = {
-  "first_name": "string",
-  "second_name": "string",
-  "display_name": "string",
-  "login": "string",
-  "email": "string",
-  "phone": "string",
-  "avatar"?: string
+  first_name: string,
+  second_name: string,
+  display_name: string,
+  login: string,
+  email: string,
+  phone: string,
+  avatar?: string
 }
 
-export default class ProfilePage extends Component {
+interface ProfilePageProps extends Props {
+  user?: ProfileData;
+  isEdit?: boolean;
+  emailInput?: ValidatedInput;
+  loginInput?: ValidatedInput;
+  firstNameInput?: ValidatedInput;
+  secondNameInput?: ValidatedInput;
+  displayNameInput?: Input;
+  phoneInput?: ValidatedInput;
+  saveButton?: Button;
+  editDataButton?: Button;
+  changePasswordButton?: Button;
+  logoutButton?: Button;
+  avatarComponent?: Avatar;
+}
+
+export default class ProfilePage extends Component<ProfilePageProps> {
   private userApi: UserAPI;
   private authApi: AuthApi;
 
-  constructor(props: Record<string, ProfileData> = {}) {
+  constructor(props: ProfilePageProps = {}) {
     const emailInput = new ValidatedInput({ id: "email", class: "profile-input", type: "email", value: props.user?.email, fieldName: "email" });
     const loginInput = new ValidatedInput({ id: "login", class: "profile-input", type: "text", value: props.user?.login, fieldName: "login" });
     const firstNameInput = new ValidatedInput({ id: "first_name", class: "profile-input", type: "text", value: props.user?.first_name, fieldName: "first_name" });
@@ -114,8 +130,7 @@ export default class ProfilePage extends Component {
       await this.userApi.saveProfile(data);
       this.toggleEditMode(false);
       const response = await this.authApi.me();
-      this.props.user = response.data;
-      this.setProps({ user: response.data });
+      this.setProps({ user: response.data as ProfileData });
 
     } catch (error) {
       console.error('Error saving profile data:', error);

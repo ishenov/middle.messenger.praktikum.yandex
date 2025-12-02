@@ -1,15 +1,15 @@
 import { Route } from './Route';
-import Component from './Component';
+import Component, { Props } from './Component';
 
-type ComponentFactory = () => Component;
-type ConcreteComponentConstructor = new (...args: any[]) => Component;
+type ComponentFactory<P extends Props> = () => Component<P>;
+type ConcreteComponentConstructor<P extends Props> = new (props: P) => Component<P>;
 
 export class Router {
   private static __instance: Router;
 
-  private routes: Route[] = [];
+  private routes: Route<Props>[] = [];
   private history: History = window.history;
-  private _currentRoute: Route | null = null;
+  private _currentRoute: Route<Props> | null = null;
   private _rootQuery: string;
 
   constructor(rootQuery: string) {
@@ -25,16 +25,15 @@ export class Router {
     Router.__instance = this;
   }
 
-  use(pathname: string, block: ComponentFactory | ConcreteComponentConstructor): this {
+  use<P extends Props>(pathname: string, block: ComponentFactory<P> | ConcreteComponentConstructor<P>): this {
     const route = new Route(pathname, block, { rootQuery: this._rootQuery });
     this.routes.push(route);
     return this;
   }
 
   start(): void {
-    window.onpopstate = ((event: PopStateEvent) => {
-      const target = event.currentTarget as Window;
-      this._onRoute(target.location.pathname);
+    window.onpopstate = (() => {
+      this._onRoute(window.location.pathname);
     }).bind(this);
 
     this._onRoute(window.location.pathname);
@@ -67,7 +66,7 @@ export class Router {
     this.history.forward();
   }
 
-  getRoute(pathname: string): Route | undefined {
+  getRoute(pathname: string): Route<Props> | undefined {
     return this.routes.find(route => route.match(pathname));
   }
 }

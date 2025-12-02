@@ -1,12 +1,12 @@
 import Handlebars from 'handlebars';
-import Component from '../../services/Component';
+import Component, { Props } from '../../services/Component';
 import template from './Avatar.hbs?raw';
 
-interface AvatarProps {
+interface AvatarProps extends Props {
   avatarUrl?: string;
 }
 
-export default class Avatar extends Component {
+export default class Avatar extends Component<AvatarProps> {
   constructor(props: AvatarProps) {
     super('div', props);
     this.element?.classList.add('avatar-container');

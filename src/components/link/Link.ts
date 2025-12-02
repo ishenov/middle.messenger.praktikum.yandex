@@ -1,6 +1,6 @@
-import Component from "../../services/Component";
+import Component, { Props } from "../../services/Component";
 
-interface LinkProps extends Record<string, unknown> {
+interface LinkProps extends Props {
     href: string;
     class?: string;
     'data-page'?: string;
@@ -11,7 +11,7 @@ interface LinkProps extends Record<string, unknown> {
 
 const template = `<a href="{{href}}" class="{{class}}" data-page="{{data-page}}" {{#if target}}target="{{target}}"{{/if}} {{#if rel}}rel="{{rel}}"{{/if}}>{{text}}</a>`;
 
-export default class Link extends Component {
+export default class Link extends Component<LinkProps> {
     constructor(props: LinkProps) {
         super("div", props);
     }

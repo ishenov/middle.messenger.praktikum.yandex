@@ -1,5 +1,5 @@
 import { ValidationService, ValidationResult } from './Validation.js';
-import Component from './Component.js';
+import Component, { Props } from './Component.js';
 
 export interface FormField {
   name: string;
@@ -7,13 +7,18 @@ export interface FormField {
   error: string;
 }
 
-export class FormValidator extends Component {
+interface FormValidatorProps extends Props {
+  formElement: HTMLFormElement;
+  onSubmitCallback?: (formData: Record<string, string>) => void;
+}
+
+export class FormValidator extends Component<FormValidatorProps> {
   private formElement: HTMLFormElement;
   private validationResults: Record<string, ValidationResult> = {};
-  private onSubmitCallback?: (formData: Record<string, string>) => void;  
+  private onSubmitCallback?: (formData: Record<string, string>) => void;
 
-  constructor(formElement: HTMLFormElement, onSubmitCallback?: () => void) {
-    super('div', {});
+  constructor(formElement: HTMLFormElement, onSubmitCallback?: (formData: Record<string, string>) => void) {
+    super('div', { formElement, onSubmitCallback });
     this.formElement = formElement;
     this.onSubmitCallback = onSubmitCallback;
     this.initializeValidation();
