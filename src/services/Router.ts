@@ -7,9 +7,9 @@ type ConcreteComponentConstructor<P extends Props> = new (props: P) => Component
 export class Router {
   private static __instance: Router;
 
-  private routes: Route<any>[] = [];
+  private routes: Route<Props>[] = [];
   private history: History = window.history;
-  private _currentRoute: Route<any> | null = null;
+  private _currentRoute: Route<Props> | null = null;
   private _rootQuery: string;
 
   constructor(rootQuery: string) {
@@ -66,7 +66,7 @@ export class Router {
     this.history.forward();
   }
 
-  getRoute(pathname: string): Route<any> | undefined {
+  getRoute(pathname: string): Route<Props> | undefined {
     return this.routes.find(route => route.match(pathname));
   }
 }

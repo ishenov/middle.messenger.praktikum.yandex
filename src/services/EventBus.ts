@@ -1,5 +1,3 @@
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Listener = (..._args: unknown[]) => void;
 
 export class EventBus {
