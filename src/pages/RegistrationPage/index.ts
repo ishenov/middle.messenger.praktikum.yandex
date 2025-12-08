@@ -1,12 +1,24 @@
 import Handlebars from 'handlebars';
-import Component from '../../services/Component';
+import Component, { Props } from '../../services/Component';
 import template from './Registration.hbs?raw';
 import { Button } from '../../components/button/Button';
 import ValidatedInput from '../../components/validated-input/ValidatedInput';
 import Router from '../../services/Router';
 
-export default class RegistrationPage extends Component {
-  constructor(props: Record<string, unknown> = {}) {
+interface RegistrationPageProps extends Props {
+  emailInput?: ValidatedInput;
+  loginInput?: ValidatedInput;
+  firstNameInput?: ValidatedInput;
+  secondNameInput?: ValidatedInput;
+  phoneInput?: ValidatedInput;
+  passwordInput?: ValidatedInput;
+  password2Input?: ValidatedInput;
+  registrationButton?: Button;
+  signinButton?: Button;
+}
+
+export default class RegistrationPage extends Component<RegistrationPageProps> {
+  constructor(props: RegistrationPageProps = {}) {
     const emailInput = new ValidatedInput({ id: 'email', type: 'email', placeholder: 'Почта', fieldName: 'email' });
     const loginInput = new ValidatedInput({ id: 'login', type: 'text', placeholder: 'Логин', fieldName: 'login' });
     const firstNameInput = new ValidatedInput({ id: 'first_name', type: 'text', placeholder: 'Имя', fieldName: 'first_name' });

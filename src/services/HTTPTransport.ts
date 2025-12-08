@@ -16,8 +16,6 @@ export interface HTTPTransportResponse<T> {
 }
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type HTTPResponse<T> = Promise<HTTPTransportResponse<T>>;
-type HTTPMethodFunction = <T>(...args: RequestWithDataArgs) => HTTPResponse<T>;
-type HTTPGetFunction = <T>(...args: RequestWithParamsArgs) => HTTPResponse<T>;
 
 type RequestWithDataArgs = [
   url: string,
@@ -147,30 +145,34 @@ class HTTPTransport {
     });
   }
 
-  public get: HTTPGetFunction = (...args) => {
-    return this.makeRequest('GET', ...args);
+  public get<T>(...args: RequestWithParamsArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('GET', ...args);
   }
 
-  public post: HTTPMethodFunction = (...args) => {
-    return this.makeRequest('POST', ...args);
+  public post<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('POST', ...args);
   }
 
-  public put: HTTPMethodFunction = (...args) => {
-    return this.makeRequest('PUT', ...args);
+  public put<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('PUT', ...args);
   }
 
-  public delete: HTTPMethodFunction = (...args) => {
-    return this.makeRequest('DELETE', ...args);
+  public delete<T>(...args: RequestWithDataArgs): HTTPResponse<T> {
+    return this.makeRequest<T>('DELETE', ...args);
   }
 
   private makeRequest<T>(
     method: HTTPMethod,
-    ...args: RequestWithDataArgs
+    ...args: RequestWithDataArgs | RequestWithParamsArgs
   ): HTTPResponse<T> {
     const [url, data, options = {}] = args;
-    return this.request<T>(this.buildURL(url), {
+    const finalURL = (method === 'GET' && typeof data === 'object' && data !== null)
+      ? this.buildURL(url, data as Record<string, string>)
+      : this.buildURL(url);
+
+    return this.request<T>(finalURL, {
       method,
-      data,
+      data: (method !== 'GET' ? data : undefined),
       ...options,
     });
   }

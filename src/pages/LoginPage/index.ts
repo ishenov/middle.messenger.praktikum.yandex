@@ -1,12 +1,19 @@
 import Handlebars from 'handlebars';
-import Component from '../../services/Component';
+import Component, { Props } from '../../services/Component';
 import template from './Login.hbs?raw';
 import { Button } from '../../components/button/Button';
 import ValidatedInput from '../../components/validated-input/ValidatedInput';
 import Router from '../../services/Router';
 
-export default class LoginPage extends Component {
-  constructor(props: Record<string, unknown> = {}) {
+interface LoginPageProps extends Props {
+  loginInput?: ValidatedInput;
+  passwordInput?: ValidatedInput;
+  signinButton?: Button;
+  signupButton?: Button;
+}
+
+export default class LoginPage extends Component<LoginPageProps> {
+  constructor(props: LoginPageProps = {}) {
     const loginInput = new ValidatedInput({ id: 'login', type: 'text', placeholder: 'Логин', fieldName: 'login' });
     const passwordInput = new ValidatedInput({ id: 'password', type: 'password', placeholder: 'Пароль', fieldName: 'password' });
     const signinButton = new Button({ id: 'signin', text: 'Авторизоваться', type: 'submit' });

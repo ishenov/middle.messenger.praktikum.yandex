@@ -23,7 +23,7 @@ const template = `<input
   {{#if disabled}}disabled{{/if}}
 >`;
 
-export default class Input extends Component {
+export default class Input extends Component<InputProps> {
     constructor(props: InputProps) {
         // The 'div' tag is a placeholder, as it will be replaced by the template.
         super("div", props);

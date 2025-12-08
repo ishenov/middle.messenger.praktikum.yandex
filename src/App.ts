@@ -1,5 +1,5 @@
 import { LoginPage, RegistrationPage, ChatPage, ProfilePage, ChangePasswordPage, NotFoundPage, ServerErrorPage } from './pages/index.js';
-import Component from './services/Component.js';
+import Component, { Props } from './services/Component.js';
 import { FormValidator } from './services/FormValidator.js';
 import Router from "./services/Router";
 import HTTPTransport from "./services/HTTPTransport";
@@ -7,8 +7,12 @@ import { registerHelpers } from './services/helpers.js';
 import {ProfileData} from "./pages/ProfilePage";
 import AuthApi from "./api/auth";
 
-export default class App extends Component {
-    private state: any;
+interface AppState extends Props {
+  currentPage: string;
+}
+
+export default class App extends Component<AppState> {
+    private state: AppState;
     private formValidators: FormValidator[] = [];
     private api: HTTPTransport;
     private router: Router;
@@ -17,7 +21,7 @@ export default class App extends Component {
 
     constructor() {
         const currentPage = window.location.pathname.split('/').pop() ?? '';
-        const initialState = {
+        const initialState: AppState = {
             currentPage
         };
         super('div', initialState);
@@ -123,6 +127,8 @@ export default class App extends Component {
         this.state.currentPage = page;
         this.removeAllEventListeners();
     }
+
+
 
     destroy(): void {
         this.formValidators.forEach(validator => validator.destroy());
